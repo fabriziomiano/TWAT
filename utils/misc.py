@@ -2,6 +2,7 @@ import datetime as dt
 import os, errno, gzip, shutil
 from settings.constants import *
 
+
 def timestamp_to_datetime(timestamp):
     """ 
     %Y-%m-%dT%H%M -> datetime.datetime() 
@@ -214,8 +215,8 @@ def splash_screen(today, weekday):
     print
     print "\t ----  Trigger-size Web-display for ART Tests ---- "
     print
-    print "\tAuthor : Fabrizio Miano" 
-    print "\tSpecial Thanks to Trigne for his support" 
+    print "\t Author : Fabrizio Miano" 
+    print "\t Special Thanks to Trigne for his support" 
     print
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M") 
     print
