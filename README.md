@@ -1,2 +1,2 @@
 # TWAT
-Trigger Web-display for Art Tests
+Trigger Web-display for Art Test

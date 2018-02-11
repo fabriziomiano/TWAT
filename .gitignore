@@ -1,6 +1,7 @@
-# Ignore all the outputs and rubbish files
-
+# output dir
 archive/
 summary/
+
+# Byte-compiled files
 *.pyc
 *~
