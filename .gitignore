@@ -1,3 +1,5 @@
+# Ignore all the outputs and rubbish files
+
 archive/
 summary/
 *.pyc
