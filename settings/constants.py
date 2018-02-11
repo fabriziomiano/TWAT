@@ -1,8 +1,13 @@
 input_home = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
-project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
-archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
-summary_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/summary']
-web_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
+project_home = '/afs/cern.ch/user/f/fmiano/TWAT'
+archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
+summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
+web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
+# Change to these values when the code will be on atrvshft@lxplus.cern.ch 
+# project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
+# archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
+# summary_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/summary']
+# web_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
 
 ART = ['ART']
 branches = ['*'] 

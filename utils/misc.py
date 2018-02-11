@@ -214,7 +214,8 @@ def splash_screen(today, weekday):
     print
     print "\t ----  Trigger-size Web-display for ART Tests ---- "
     print
-    print " Author : Fabrizio Miano" 
+    print "\tAuthor : Fabrizio Miano" 
+    print "\tSpecial Thanks to Trigne for his support" 
     print
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M") 
     print
