@@ -141,14 +141,14 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
     day = parts[4]
     branch = parts[5]
     project = parts[6]
-    time = parts[7]
+    clock = parts[7]
     platform = parts[8]
     sample = parts[9]
 
     for trigger in trigger_categories:
         fileout_path = os.path.join(summary_path,trigger[0]+".txt")        
         info_line = "%s %s %s %s %s %s %s %s %s" %\
-        (year, month, day, branch, project, time, platform, sample, trigger[1])
+        (year, month, day, branch, project, clock, platform, sample, trigger[1])
 
         if not os.path.exists(fileout_path):
             print "------> Creating summary file for %s" % trigger[0]
@@ -174,7 +174,7 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
 
     fileout_path = os.path.join(summary_path, "triggerTotal.txt")
     info_line = "%s %s %s %s %s %s %s %s %s" %\
-    (year, month, day, branch, project, time, platform, sample, total_size)
+    (year, month, day, branch, project, clock, platform, sample, total_size)
 
     if not os.path.exists(fileout_path):
         print "------> Creating summary file for %s" % "triggerTotal.txt"
