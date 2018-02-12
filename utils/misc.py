@@ -224,6 +224,20 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
                        "triggerTotal is ", total_size)
 
 
+def set_consecutive(file_path):
+    """ 
+    Return a string with consecutive id number if file_path exists, 
+    else return file_path
+
+    """
+    new_path = file_path
+    last_id = 0
+    while os.path.isfile(new_path):
+        last_id += 1
+        new_path = file_path + '.' + str(last_id)
+    return new_path
+
+
 ##############################################################
 
 def splash_screen(today, weekday):
