@@ -1,6 +1,33 @@
+import logging
 import datetime as dt
-import os, errno, gzip, shutil
+import os
+import errno
+import gzip
+import shutil
 from settings.constants import *
+
+
+def get_logger(name):
+    """ 
+    Add a StreamHandler to a logger if still not added and
+    return the logger
+
+    """
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        logger.propagate = 0  # not propagate to parent
+        console = logging.StreamHandler()
+        logger.addHandler(console)
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        console.setFormatter(formatter)
+    return logger
+
+
+# logger for utils functions
+utils_log = get_logger(__name__)
+utils_log.setLevel(logging.DEBUG)
+
 
 def timestamp_to_datetime(timestamp):
     """ 
@@ -15,12 +42,12 @@ def set_summary_path(archived_file):
     """
     substitute the word 'archive' from 
     a given archive_path with 'summary'
-    """ 
+    """
     archive_dir = os.path.split(archived_file)[0]
     summary_dir = archive_dir.replace('archive', 'summary')
     return summary_dir
-        
-        
+
+
 def extract_path_info(path, source_home):
     """
     Read info from a given path and
@@ -46,17 +73,15 @@ def create_nonexistent_archive(path):
     """
     try:
         os.makedirs(path)
-	print("------> Created directory with path:")
-        print path
+        utils_log.info("Created directory with path: %s\n", path)
         return path
     except OSError as e:
         if e.errno != errno.EEXIST:
-            print('ERROR :: An error occurred, could not ' +
-		  'create directory with path: ',
-		  path)
+            utils_log.error(
+                "Could not create directory with path: %s\n", path)
             raise
         return None
-    
+
 
 def delete_empty_archive(path):
     """
@@ -66,23 +91,24 @@ def delete_empty_archive(path):
     """
     try:
         os.rmdir(path)
-        print("WARNING :: Removed empty archive with path: %s " % path)
+        utils_log.warn('Removed empty archive with path: %s\n', path)
         return True
     except OSError as e:
         if e.errno != errno.ENOTEMPTY:
-            print("ERROR :: Unknown Error occurred")
+            utils_log.error("Could not remove path: %s\n", path)
             raise
-        print("WARNING :: Archive is not empty and was not removed")
+        utils_log.warn(
+            "Directory %s is not empty and was not removed\n", path)
 
-        
+
 def copy_and_compress(filein_path, destination_path):
     """ 
     Copy and compress given input file 
     to a given destination destination directory  
     Raise an error if not possible
 
-    """ 
-    try:    
+    """
+    try:
         filein = os.path.basename(filein_path)
         fileout = filein + '.gz'
         fileout_path = os.path.join(destination_path, fileout)
@@ -90,16 +116,16 @@ def copy_and_compress(filein_path, destination_path):
         f_out = gzip.open(fileout_path, 'wb')
         shutil.copyfileobj(f_in, f_out)
         os.system('chmod 644 ' + fileout_path)
-        print '------> File\t' + filein.split('/')[-1] + '\t archived at: '
-        print fileout_path
+        utils_log.info("File\t%s\t archived at: %s\n",
+                       filein, fileout_path)
     except IOError as e:
         delete_empty_archive(destination_path)
-        print '------> ERROR :: Failed to copy file. Please run script again.'
-        raise
+        utils_log.error("Failed to copy file from %s\n" +
+                        "Please run script again\n", filein_path)
     finally:
         f_out.close()
         f_in.close()
-    
+
 
 def get_trigsize(input_file):
     """
@@ -117,14 +143,14 @@ def get_trigsize(input_file):
                 total_size = (line.split()[-1]).strip()
             if line.startswith('trigger'):
                 trigger_categories += [(line.strip()).split()]
-        return (trigger_categories, total_size);
+        return (trigger_categories, total_size)
     except IOError as e:
-        print '------> ERROR :: Could not read from file. Please run script again.'
+        utils_log.error("Could not read file: %s\n" +
+                        "Please run script again\n", input_file)
         raise
     finally:
         f.close()
 
-        
 
 def write_triginfo_to_file(summary_path, trigger_categories, total_size):
     """
@@ -145,14 +171,15 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
     sample = parts[9]
 
     for trigger in trigger_categories:
-        fileout_path = os.path.join(summary_path,trigger[0]+".txt")        
+        fileout_path = os.path.join(summary_path, trigger[0]+".txt")
         info_line = "%s %s %s %s %s %s %s %s %s" %\
-        (year, month, day, branch, project, time, platform, sample, trigger[1])
+            (year, month, day, branch, project,
+             time, platform, sample, trigger[1])
 
         if not os.path.exists(fileout_path):
-            print "------> Creating summary file for %s" % trigger[0]
+            utils_log.info("Creating summary file for %s\n", trigger[0])
         else:
-            print "------> Opening summary file for %s" % trigger[0]
+            utils_log.info("Opening summary file for %s\n", trigger[0])
 
         f = open(fileout_path, "a+")
         f.seek(0)
@@ -162,25 +189,24 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
                 found = True
                 break
         if not found:
-            print "------> Entering info into summary file : %s = %s" %\
-                (trigger[0], trigger[1])
+            utils_log.info("Entering info into summary file: %s = %s\n",
+                           trigger[0], trigger[1])
             f.write(info_line+"\n")
         else:
-            print "------> Info already in summary file"
-
-
-
+            utils_log.info("Info already in summary file\n")
 
     fileout_path = os.path.join(summary_path, "triggerTotal.txt")
     info_line = "%s %s %s %s %s %s %s %s %s" %\
-    (year, month, day, branch, project, time, platform, sample, total_size)
+        (year, month, day, branch, project, time, platform, sample, total_size)
 
     if not os.path.exists(fileout_path):
-        print "------> Creating summary file for %s" % "triggerTotal.txt"
+        utils_log.info(
+            "Creating summary file for %s" % "triggerTotal.txt")
     else:
-        print "------> Opening summary file for %s" % "triggerTotal.txt"
+        utils_log.info(
+            "Opening summary file for %s" % "triggerTotal.txt")
 
-    f = open(fileout_path, "a+")	
+    f = open(fileout_path, "a+")
     f.seek(0)
     found = False
     for line in f:
@@ -188,21 +214,14 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
             found = True
             break
     if not found and total_size != 0:
-        print "------> Entering info into summary file : %s = %s" %\
-            ("triggerTotal", total_size)
+        utils_log.info("Entering info into summary file: %s = %s\n"
+                       % "triggerTotal", total_size)
         f.write(info_line+"\n")
     elif found and total_size != 0:
-        print "------> Info already in summary file"
+        utils_log.info("Info already in summary file")
     elif total_size == 0:
-        print "------> Skipping this file : %s = %s" %\
-            ("triggerTotal is ", total_size)
-                    
-                
-
-
-
-
-
+        utils_log.info("Skipping this file: %s = %s"
+                       "triggerTotal is ", total_size)
 
 
 ##############################################################
@@ -214,10 +233,10 @@ def splash_screen(today, weekday):
     print
     print "\t ----  Trigger-size Web-display for ART Tests ---- "
     print
-    print "\tAuthor : Fabrizio Miano" 
-    print "\tSpecial Thanks to Trigne for his support" 
+    print "\tAuthor : Fabrizio Miano"
+    print "\tSpecial Thanks to Trigne for his support"
     print
-    print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M") 
+    print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M")
     print
     print
     print "\t ART home directory     : %s" % input_home
