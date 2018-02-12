@@ -4,12 +4,16 @@ create new archive within art_home like
 ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid 
 
 """
-import logging
+import logging, logging.handlers
+import time as time_module
 import os, glob, datetime, gzip
 from itertools import product
 from utils.misc import *
 from settings.constants import *
 
+LOG_DIRECTORY = "logs"
+LOG_FILE_NAME = "logs/archive_" + \
+                time_module.strftime('%Y-%m-%d') + ".out"
 today = datetime.datetime.now()
 weekday = today.strftime("%w")
 
@@ -20,6 +24,17 @@ dirs = []
 # Create logger
 logger = get_logger(__name__)
 logger.setLevel(logging.DEBUG)
+# Set file handler
+# TODO: try to use RotatingFileHandler and doRollover
+# instead of 'set_consecutive'
+create_nonexistent_archive(LOG_DIRECTORY)
+log_file = set_consecutive(LOG_FILE_NAME)
+file_handler = logging.FileHandler(log_file, mode='w')
+file_handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 
 for pattern_fields in product(*input_path_structure):    
@@ -51,5 +66,6 @@ if len(dirs) > 0:
                 len(dirs))
 else:
     logger.info('\t No new files were added to the archive\n')
-print 
-print
+
+# file_handler.close()
+# logger.removeHandler(file_handler)
