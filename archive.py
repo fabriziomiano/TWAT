@@ -12,8 +12,9 @@ from utils.misc import *
 from settings.constants import *
 
 LOG_DIRECTORY = "logs"
-LOG_FILE_NAME = "logs/archive_" + \
-                time_module.strftime('%Y-%m-%d') + ".out"
+LOG_FILE_NAME = os.path.join(
+    LOG_DIRECTORY,
+    "archive_" + time_module.strftime('%Y-%m-%d') + ".out")
 today = datetime.datetime.now()
 weekday = today.strftime("%w")
 
