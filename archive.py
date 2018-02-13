@@ -5,11 +5,18 @@ ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_gri
 
 """
 import logging, logging.handlers
+from classes.BufferingSMTPHandler import BufferingSMTPHandler
 import time as time_module
 import os, glob, datetime, gzip
 from itertools import product
 from utils.misc import *
 from settings.constants import *
+
+
+MAILHOST = 'localhost'
+FROM = 'fmiano@lxplus.cern.ch'
+TO = ['giosue.ruscica@gmail.com']
+SUBJECT = 'TWAT test'
 
 LOG_DIRECTORY = "logs"
 LOG_FILE_NAME = os.path.join(
@@ -25,20 +32,24 @@ dirs = []
 # Create logger
 logger = get_logger(__name__)
 logger.setLevel(logging.DEBUG)
-# Set file handler
+# Add  file handler
 # TODO: try to use RotatingFileHandler and doRollover
 # instead of 'set_consecutive'
 create_nonexistent_archive(LOG_DIRECTORY)
 log_file = set_consecutive(LOG_FILE_NAME)
 file_handler = logging.FileHandler(log_file, mode='w')
-file_handler.setLevel(logging.DEBUG)
+file_handler.setLevel(logging.INFO)
 formatter = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
+# Add email handler
+email_handler = BufferingSMTPHandler(MAILHOST, FROM, TO, SUBJECT, 100)
+email_handler.setLevel(logging.ERROR)
+logger.addHandler(email_handler)
 
 
-for pattern_fields in product(*input_path_structure):    
+for pattern_fields in product(*input_path_structure):
     pattern = os.path.join(*pattern_fields)
     for file_toarchive in glob.glob(pattern):
         logger.info('Getting info from ART path = %s \n',
