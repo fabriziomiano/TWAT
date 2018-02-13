@@ -6,6 +6,7 @@ and write out summary files for dedicated trigger categories
 """
 import time as time_module
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
+from utils.misc import utils_log
 import os, glob, datetime, gzip
 from itertools import product
 from utils.misc import *
@@ -37,7 +38,8 @@ formatter = logging.Formatter(
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(email_handler)
-
+utils_log.addHandler(file_handler)
+utils_log.addHandler(email_handler)
 
 for pattern_fields in product(*archive_path_structure):
     pattern = os.path.join(*pattern_fields)
