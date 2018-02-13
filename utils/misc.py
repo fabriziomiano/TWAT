@@ -65,7 +65,7 @@ def extract_path_info(path, source_home):
     return relevant_info
 
 
-def create_nonexistent_archive(path):
+def create_nonexistent_archive(path, exc_raise=True):
     """
     Create directory from given path
     Return True if created, False if it exists
@@ -77,13 +77,13 @@ def create_nonexistent_archive(path):
         return path
     except OSError as e:
         if e.errno != errno.EEXIST:
-            utils_log.error(
+            utils_log.exception(
                 "Could not create directory with path: %s\n", path)
-            raise
+            if exc_raise: raise
         return None
 
 
-def delete_empty_archive(path):
+def delete_empty_archive(path, exc_raise=True):
     """
     Try to remove a directory at a given path
     Return True if created, otherwise raise error 
@@ -95,13 +95,13 @@ def delete_empty_archive(path):
         return True
     except OSError as e:
         if e.errno != errno.ENOTEMPTY:
-            utils_log.error("Could not remove path: %s\n", path)
-            raise
+            utils_log.exception("Could not remove path: %s\n", path)
+            if exc_raise: raise
         utils_log.warn(
             "Directory %s is not empty and was not removed\n", path)
 
 
-def copy_and_compress(filein_path, destination_path):
+def copy_and_compress(filein_path, destination_path, exc_raise=True):
     """ 
     Copy and compress given input file 
     to a given destination destination directory  
@@ -120,14 +120,15 @@ def copy_and_compress(filein_path, destination_path):
                        filein, fileout_path)
     except IOError as e:
         delete_empty_archive(destination_path)
-        utils_log.error("Failed to copy file from %s\n" +
-                        "Please run script again\n", filein_path)
+        utils_log.exception("Failed to copy file from %s\n",
+                            filein_path)
+        if exc_raise: raise
     finally:
         f_out.close()
         f_in.close()
 
 
-def get_trigsize(input_file):
+def get_trigsize(input_file, exc_raise=True):
     """
     For a given txt file it returns a tuple 
     with all the trigger categories and 
@@ -145,9 +146,8 @@ def get_trigsize(input_file):
                 trigger_categories += [(line.strip()).split()]
         return (trigger_categories, total_size)
     except IOError as e:
-        utils_log.error("Could not read file: %s\n" +
-                        "Please run script again\n", input_file)
-        raise
+        utils_log.exception("Could not read file: %s\n", input_file)
+        if exc_raise: raise
     finally:
         f.close()
 
@@ -215,13 +215,13 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
             break
     if not found and total_size != 0:
         utils_log.info("Entering info into summary file: %s = %s\n"
-                       % "triggerTotal", total_size)
+                       % ("triggerTotal", total_size))
         f.write(info_line+"\n")
     elif found and total_size != 0:
         utils_log.info("Info already in summary file")
     elif total_size == 0:
         utils_log.info("Skipping this file: %s = %s"
-                       "triggerTotal is ", total_size)
+                       % ("triggerTotal is ", total_size))
 
 
 def set_consecutive(file_path):
