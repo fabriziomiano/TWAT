@@ -6,6 +6,7 @@ ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_gri
 """
 import logging, logging.handlers
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
+from utils.misc import utils_log
 import time as time_module
 import os, glob, datetime, gzip
 from itertools import product
@@ -47,7 +48,9 @@ logger.addHandler(file_handler)
 email_handler = BufferingSMTPHandler(MAILHOST, FROM, TO, SUBJECT, 100)
 email_handler.setLevel(logging.ERROR)
 logger.addHandler(email_handler)
-
+# Add handlers to utils_log
+utils_log.addHandler(file_handler)
+utils_log.addHandler(email_handler)
 
 for pattern_fields in product(*input_path_structure):
     pattern = os.path.join(*pattern_fields)
