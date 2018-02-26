@@ -15,7 +15,7 @@ def get_logger(name):
     """
     logger = logging.getLogger(name)
     if not logger.handlers:
-        logger.propagate = 0  # not propagate to parent
+        logger.propagate = 1  # propagate to parent
         console = logging.StreamHandler()
         logger.addHandler(console)
         formatter = logging.Formatter(
@@ -26,7 +26,7 @@ def get_logger(name):
 
 # logger for utils functions
 utils_log = get_logger(__name__)
-utils_log.setLevel(logging.DEBUG)
+utils_log.setLevel(logging.INFO)
 
 
 def timestamp_to_datetime(timestamp):
