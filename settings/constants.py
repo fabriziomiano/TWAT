@@ -1,8 +1,8 @@
 input_home = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
 project_home = '/afs/cern.ch/user/f/fmiano/TWAT'
-archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
-summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
-web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
+archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/archive']
+summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/summary']
+web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/webpage/']
 # Change to these values when the code will be on atrvshft@lxplus.cern.ch 
 # project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
 # archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
@@ -17,7 +17,7 @@ timestamps = ['20*-*-*T*']
 year = ['*']
 month = ['*']
 day = ['*']
-time = ['*H*M']
+clock = ['*H*M']
 samples = ['*']
 test = ['TrigAnalysisTest']
 
@@ -40,16 +40,6 @@ input_path_structure = (input_home, branches, projects, platforms,
        	       	        timestamps, test, samples, input_files)
 
 archive_path_structure = (archive_home, ART, year, month, day,
-                          branches, projects, time, platforms,
+                          branches, projects, clock, platforms,
                           samples, archived_files)
-
-
-# The following needs revision:
-# if active adds one extra line like this one 
-#
-# 2018 2 1 21.0 Athena 21H53M x86_64-slc6-gcc62-opt test_mc_pp_v7_rdotoaod_grid 0
-#
-# in the summary files triggerTotal.txt.
-# Temporarily solved by using
-# a single-element input_files
 

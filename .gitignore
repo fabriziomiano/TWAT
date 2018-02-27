@@ -1,4 +1,7 @@
+# output dir
 archive/
 summary/
+
+# Byte-compiled files
 *.pyc
 *~

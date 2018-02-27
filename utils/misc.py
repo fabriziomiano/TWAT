@@ -166,7 +166,7 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
     day = parts[4]
     branch = parts[5]
     project = parts[6]
-    time = parts[7]
+    clock = parts[7]
     platform = parts[8]
     sample = parts[9]
 
@@ -247,8 +247,8 @@ def splash_screen(today, weekday):
     print
     print "\t ----  Trigger-size Web-display for ART Tests ---- "
     print
-    print "\tAuthor : Fabrizio Miano"
-    print "\tSpecial Thanks to Trigne for his support"
+    print "\t Author : Fabrizio Miano" 
+    print "\t Special Thanks to Trigne for his support" 
     print
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M")
     print
