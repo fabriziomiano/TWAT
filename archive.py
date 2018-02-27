@@ -4,6 +4,7 @@ create new archive within art_home like
 ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid 
 
 """
+import logging
 import os, glob, datetime, gzip
 from itertools import product
 from utils.misc import *
@@ -16,14 +17,17 @@ splash_screen(today, weekday)
 
 dirs = []
 
+# Create logger
+logger = get_logger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
 for pattern_fields in product(*input_path_structure):    
     pattern = os.path.join(*pattern_fields)
     for file_toarchive in glob.glob(pattern):
-        input_file = os.path.basename(file_toarchive)
-        print
-        print 'INFO :: Getting info from ART path = '
-        print '%s ' % file_toarchive
-        
+        logger.info('Getting info from ART path = %s \n',
+                    file_toarchive)
+        input_file = os.path.basename(file_toarchive)        
         input_info = extract_path_info(file_toarchive, input_home[0])
         archive_path = os.path.join(archive_home[0], 'ART', \
                                     str(input_info["datetime"].year), \
@@ -42,11 +46,10 @@ for pattern_fields in product(*input_path_structure):
             copy_and_compress(file_toarchive, archive_path)
             dirs+=[file_toarchive]
             
-print
-print
 if len(dirs) > 0:
-    print '\t', len(dirs), 'files successfully archived. Done'
+    logger.info('%s files successfully archived. Done \n',
+                len(dirs))
 else:
-    print '\tNo new files were added to the archive.'
+    logger.info('\t No new files were added to the archive\n')
 print 
 print
