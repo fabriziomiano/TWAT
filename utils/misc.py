@@ -174,7 +174,7 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
         fileout_path = os.path.join(summary_path, trigger[0]+".txt")
         info_line = "%s %s %s %s %s %s %s %s %s" %\
             (year, month, day, branch, project,
-             time, platform, sample, trigger[1])
+             clock, platform, sample, trigger[1])
 
         if not os.path.exists(fileout_path):
             utils_log.info("Creating summary file for %s\n", trigger[0])
@@ -197,7 +197,7 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
 
     fileout_path = os.path.join(summary_path, "triggerTotal.txt")
     info_line = "%s %s %s %s %s %s %s %s %s" %\
-        (year, month, day, branch, project, time, platform, sample, total_size)
+        (year, month, day, branch, project, clock, platform, sample, total_size)
 
     if not os.path.exists(fileout_path):
         utils_log.info(

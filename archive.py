@@ -16,7 +16,7 @@ from settings.constants import *
 
 MAILHOST = 'localhost'
 FROM = 'fmiano@lxplus.cern.ch'
-TO = ['giosue.ruscica@gmail.com']
+TO = ['fabriziomiano@gmail.com']
 SUBJECT = 'TWAT test'
 
 LOG_DIRECTORY = "logs"
