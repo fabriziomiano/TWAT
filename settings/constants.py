@@ -1,8 +1,8 @@
 input_home = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
 project_home = '/afs/cern.ch/user/f/fmiano/TWAT'
-archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/archive']
-summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/summary']
-web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/output/webpage/']
+archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
+summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
+web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage/']
 # Change to these values when the code will be on atrvshft@lxplus.cern.ch 
 # project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
 # archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
