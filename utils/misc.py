@@ -253,7 +253,7 @@ def splash_screen(today, weekday):
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M")
     print
     print
-    print "\t ART home directory     : %s" % input_home
+    print "\t ART home directory      : %s" % input_home
     print "\t Archive home directory  : %s" % archive_home
     print "\t Summary home directory  : %s" % summary_home
     print "\t Webpage home directory  : %s" % web_home
