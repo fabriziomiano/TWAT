@@ -15,7 +15,7 @@ from settings.constants import *
 
 
 MAILHOST = 'localhost'
-FROM = 'fmiano@lxplus.cern.ch'
+FROM = 'atrvshft@lxplus.cern.ch'
 TO = ['fabriziomiano@gmail.com']
 SUBJECT = 'TWAT test'
 
