@@ -1,6 +1,5 @@
 # TWAT
-Trigger Web-display for Art Test
-This is a tool to monitor the size of the trigger Event-Data-Model developed for the ATLAS Experiment at CERN
+Trigger Web-display for Art Test is a tool to monitor the size of the Event Data Model for each Trigger category, developed for the ATLAS Experiment at CERN.
 
 # BRANCHES
 master, logging, webpage
