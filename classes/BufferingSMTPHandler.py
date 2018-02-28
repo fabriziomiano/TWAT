@@ -31,7 +31,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
                     self.subject)
                 for record in self.buffer:
                     s = self.format(record)
-                    print s
+                    #print s
                     msg = msg + s + "\r\n"
                 smtp.sendmail(self.fromaddr, self.toaddrs, msg)
                 smtp.quit()
