@@ -15,7 +15,7 @@ from settings.constants import *
 dirs = []
 
 MAILHOST = 'localhost'
-FROM = 'fmiano@lxplus.cern.ch'
+FROM = 'atrvshft@lxplus.cern.ch'
 TO = ['fabriziomiano@gmail.com']
 SUBJECT = 'TWAT test'
 
@@ -56,4 +56,3 @@ for pattern_fields in product(*archive_path_structure):
         trigger_categories, total_size = get_trigsize(archived_file)
         write_triginfo_to_file(
             summary_path, trigger_categories, total_size)
-        
