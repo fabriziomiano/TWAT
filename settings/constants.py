@@ -1,9 +1,22 @@
-input_home = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
-project_home = '/afs/cern.ch/user/f/fmiano/TWAT'
-archive_home = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
-summary_home = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
-web_home = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
-plots_home = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
+import os,datetime
+import time as time_module
+
+MAILHOST = 'localhost'
+FROM = 'atrvshft@lxplus.cern.ch'
+TO = ['fabriziomiano@gmail.com']
+SUBJECT = 'TWAT test'
+
+LOG_DIRECTORY = "logs"
+LOG_FILE_NAME = os.path.join(
+    LOG_DIRECTORY,
+    "archive_" + time_module.strftime('%Y-%m-%d') + ".out")
+
+INPUT_HOME = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
+PROJECT_HOME = '/afs/cern.ch/user/f/fmiano/TWAT'
+ARCHIVE_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
+SUMMARY_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
+WEB_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
+PLOTS_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
 # Change to these values when the code will be on atrvshft@lxplus.cern.ch 
 # project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
 # archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
@@ -11,46 +24,40 @@ plots_home = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
 # web_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
 # plots_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/plots']
 
-ART = ['ART']
-branches = ['*'] 
-projects = ['*']
-platforms = ['*']
-timestamps = ['20*-*-*T*']
-year = ['*']
-month = ['*']
-day = ['*']
-clock = ['*H*M']
-samples = ['*']
-test = ['TrigAnalysisTest']
+TODAY = datetime.datetime.now()
+WEEKDAY = TODAY.strftime("%w")
 
-triginfo_file = ['AOD.pool.root.checkFiletrigSize.txt']
-additional_files = ['AOD.pool.root.checkFile',
+ART = ['ART']
+BRANCHES = ['*'] 
+PROJECTS = ['*']
+PLATFORMS = ['*']
+TIMESTAMPS = ['20*-*-*T*']
+YEARS = ['*']
+MONTHS = ['*']
+DAYS = ['*']
+CLOCK = ['*H*M']
+SAMPLES = ['*']
+TEST = ['TrigAnalysisTest']
+
+TRIGINFO_FILE = ['AOD.pool.root.checkFiletrigSize.txt']
+ADDITIONAL_FILES = ['AOD.pool.root.checkFile',
                     'AOD.pool.root.checkFile0',
                     '*_script_log'
 ]
+INPUT_FILES = TRIGINFO_FILE + ADDITIONAL_FILES
+INPUT_PATH_STRUCT = (INPUT_HOME, BRANCHES, PROJECTS, PLATFORMS,
+       	       	        TIMESTAMPS, TEST, SAMPLES, INPUT_FILES)
 
-input_files = triginfo_file + additional_files 
-archived_files = [input_file + '.gz' for input_file in input_files]
+ARCHIVED_FILES = [input_file + '.gz' for input_file in INPUT_FILES]
+ARCHIVE_PATH_STRUCT = (ARCHIVE_HOME, ART, YEARS, MONTHS, DAYS,
+                          BRANCHES, PROJECTS, CLOCK, PLATFORMS,
+                          SAMPLES, ARCHIVED_FILES)
 
-input_path_structure = (input_home, branches, projects, platforms,
-       	       	        timestamps, test, samples, input_files)
-
-archive_path_structure = (archive_home, ART, year, month, day,
-                          branches, projects, clock, platforms,
-                          samples, archived_files)
-
-summary_file = ['trigger']
-
-trig_categories = ['Total', 'Bjet', 'Bphys', 'Calo',\
+SUMMARY_FILE = ['trigger']
+TRIG_CATEGORIES = ['Total', 'Bjet', 'Bphys', 'Calo',\
                    'Combined', 'Cosmics', 'Egamma',\
                    'HeavyIon','Jet','L1','MET','MinBias',\
                    'Muon','Steer','Tau','Tracking']
-
-summary_files = [f + category + '.txt' for f in summary_file for category in trig_categories]
-
-
-summary_files_path_structure = (summary_home, ART, year, month, day,
-                          branches, projects, clock, platforms,
-                               samples, summary_files)
-
-
+SUMMARY_FILES = [f + category + '.txt' for f in SUMMARY_FILE for category in TRIG_CATEGORIES]
+SUMMARY_PATH_STRUCT = (SUMMARY_HOME, ART, BRANCHES, PROJECTS,
+                                PLATFORMS, SAMPLES, SUMMARY_FILES)
