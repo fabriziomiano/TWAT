@@ -1,13 +1,19 @@
 from settings.constants import *
 import json, os
 
-def getCategoryNominalSize(branch, project, platform, sample, category):
+REF_PATH = os.path.join(project_home, 'edm.json')
 
-path = os.path.join(project_home, 'edm.json')
-if os.path.isfile(path):
+def getCategoryNominalSize(info, path):
     f = open(path, 'r')
     edm = json.load(f)
-    return \
-        edm[branch][project][platform][sample][category]['nominal'],\
-        edm[branch][project][platform][sample][category]['range'], 
-
+    f.close()
+    fields = rel_info
+    selected_trig = edm    
+    for field in fields:
+        try:
+            selected_trig = selected_trig[field]
+        except KeyError:
+            msg = "key " +  field + " does not exist"
+            print(msg)
+            return fields.index(field)  # per fare come Rodger
+    return selected_trig['nominal'], selected_trig['range']
