@@ -10,7 +10,7 @@ from collections import defaultdict
 from settings.constants import *
 
 RANGE_ACCEPTED = 0.05
-REFS_PATH = os.path.join(project_home, 'edm.json')
+REFS_PATH = os.path.join(PROJECT_HOME, 'edm.json')
 nested_dict = lambda: defaultdict(nested_dict)
 
 
@@ -62,10 +62,9 @@ def update_refs(info, path):
     edm_inserter(updated_edm, path)
 
     
-for pattern_fields in product(*summary_files_path_structure):
+for pattern_fields in product(*SUMMARY_PATH_STRUCT):
     pattern = os.path.join(*pattern_fields)
     for summary_file in glob.glob(pattern):
-        
         f = open(summary_file,'r')
         size = -1
         for line in f:
