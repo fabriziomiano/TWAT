@@ -38,14 +38,41 @@ def timestamp_to_datetime(timestamp):
     return dt.datetime.strptime(timestamp, "%Y-%m-%dT%H%M")
 
 
-def set_summary_path(archived_file):
+def set_summary_path(input_info):
     """
-    substitute the word 'archive' from 
-    a given archive_path with 'summary'
+    Return summary-path-like string from 
+    a dictionary containing all the relevant
+    info read from input_home
+
+    """      
+    summary_path = os.path.join(SUMMARY_HOME[0], 'ART', \
+                                str(input_info["branch"]), \
+                                str(input_info["project"]), \
+                                str(input_info["platform"]), \
+                                str(input_info["sample"])
+    )
+    return summary_path
+
+
+def set_archive_path(input_info):
     """
-    archive_dir = os.path.split(archived_file)[0]
-    summary_dir = archive_dir.replace('archive', 'summary')
-    return summary_dir
+    Return archive-path-like string from 
+    a dictionary containing all the relevant
+    info read from input_home
+
+    """      
+    archive_path = os.path.join(ARCHIVE_HOME[0], 'ART', \
+                                str(input_info["datetime"].year), \
+                                str(input_info["datetime"].month), \
+                                str(input_info["datetime"].day), \
+                                str(input_info["branch"]), \
+                                str(input_info["project"]), \
+                                str(input_info["datetime"].hour) + 'H' + \
+                                str(input_info["datetime"].minute) + 'M', \
+                                str(input_info["platform"]), \
+                                str(input_info["sample"])
+    )
+    return archive_path
 
 
 def extract_path_info(path, source_home):
@@ -65,7 +92,7 @@ def extract_path_info(path, source_home):
     return relevant_info
 
 
-def create_nonexistent_archive(path, exc_raise=True):
+def create_nonexistent_archive(path, exc_raise=False):
     """
     Create directory from given path
     Return True if created, False if it exists
@@ -83,7 +110,7 @@ def create_nonexistent_archive(path, exc_raise=True):
         return None
 
 
-def delete_empty_archive(path, exc_raise=True):
+def delete_empty_archive(path, exc_raise=False):
     """
     Try to remove a directory at a given path
     Return True if created, otherwise raise error 
@@ -101,7 +128,7 @@ def delete_empty_archive(path, exc_raise=True):
             "Directory %s is not empty and was not removed\n", path)
 
 
-def copy_and_compress(filein_path, destination_path, exc_raise=True):
+def copy_and_compress(filein_path, destination_path, exc_raise=False):
     """ 
     Copy and compress given input file 
     to a given destination destination directory  
@@ -128,7 +155,7 @@ def copy_and_compress(filein_path, destination_path, exc_raise=True):
         f_in.close()
 
 
-def get_trigsize(input_file, exc_raise=True):
+def get_trigsize(input_file, exc_raise=False):
     """
     For a given txt file it returns a tuple 
     with all the trigger categories and 
@@ -152,7 +179,7 @@ def get_trigsize(input_file, exc_raise=True):
         f.close()
 
 
-def write_triginfo_to_file(summary_path, trigger_categories, total_size):
+def write_triginfo_to_file(input_info, summary_path, trigger_categories, total_size):
     """
     For each trigger category it creates a .txt file 
     named after that category. The file created will 
@@ -160,16 +187,17 @@ def write_triginfo_to_file(summary_path, trigger_categories, total_size):
     of that specific category 
 
     """
-    parts = summary_path[len(summary_home[0]):].split('/')
-    year = parts[2]
-    month = parts[3]
-    day = parts[4]
-    branch = parts[5]
-    project = parts[6]
-    clock = parts[7]
-    platform = parts[8]
-    sample = parts[9]
+    year = str(input_info["datetime"].year)
+    month = str(input_info["datetime"].month)
+    day = str(input_info["datetime"].day)
+    branch = str(input_info["branch"])
+    project = str(input_info["project"])
+    clock = str(input_info["datetime"].hour) + 'H' +\
+            str(input_info["datetime"].minute) + 'M'
+    platform = str(input_info["platform"])
+    sample = str(input_info["sample"])
 
+    
     for trigger in trigger_categories:
         fileout_path = os.path.join(summary_path, trigger[0]+".txt")
         info_line = "%s %s %s %s %s %s %s %s %s" %\
@@ -238,6 +266,8 @@ def set_consecutive(file_path):
     return new_path
 
 
+
+
 ##############################################################
 
 def splash_screen(today, weekday):
@@ -253,10 +283,10 @@ def splash_screen(today, weekday):
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M")
     print
     print
-    print "\t ART home directory      : %s" % input_home
-    print "\t Archive home directory  : %s" % archive_home
-    print "\t Summary home directory  : %s" % summary_home
-    print "\t Webpage home directory  : %s" % web_home
+    print "\t ART home directory      : %s" % INPUT_HOME
+    print "\t Archive home directory  : %s" % ARCHIVE_HOME
+    print "\t Summary home directory  : %s" % SUMMARY_HOME
+    print "\t Webpage home directory  : %s" % WEB_HOME
     print
     print "\t-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
     print
