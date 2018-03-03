@@ -1,6 +1,20 @@
 import os,datetime
 import time as time_module
 
+# Change to these values when the code will be on atrvshft@lxplus.cern.ch 
+# PROJECT_HOME = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
+# ARCHIVE_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
+# SUMMARY_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/summary']
+# WEB_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
+# PLOTS_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/plots']
+INPUT_HOME = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
+PROJECT_HOME = '/afs/cern.ch/user/f/fmiano/TWAT'
+ARCHIVE_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
+SUMMARY_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
+WEB_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
+PLOTS_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
+
+
 MAILHOST = 'localhost'
 FROM = 'atrvshft@lxplus.cern.ch'
 TO = ['fabriziomiano@gmail.com']
@@ -11,18 +25,8 @@ LOG_FILE_NAME = os.path.join(
     LOG_DIRECTORY,
     "archive_" + time_module.strftime('%Y-%m-%d') + ".out")
 
-INPUT_HOME = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
-PROJECT_HOME = '/afs/cern.ch/user/f/fmiano/TWAT'
-ARCHIVE_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
-SUMMARY_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
-WEB_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
-PLOTS_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
-# Change to these values when the code will be on atrvshft@lxplus.cern.ch 
-# project_home = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
-# archive_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
-# summary_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/summary']
-# web_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
-# plots_home = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/plots']
+RANGE_ACCEPTED = 0.05
+REFS_PATH = os.path.join(PROJECT_HOME, 'edm.json')
 
 TODAY = datetime.datetime.now()
 WEEKDAY = TODAY.strftime("%w")
@@ -58,6 +62,7 @@ TRIG_CATEGORIES = ['Total', 'Bjet', 'Bphys', 'Calo',\
                    'Combined', 'Cosmics', 'Egamma',\
                    'HeavyIon','Jet','L1','MET','MinBias',\
                    'Muon','Steer','Tau','Tracking']
-SUMMARY_FILES = [f + category + '.txt' for f in SUMMARY_FILE for category in TRIG_CATEGORIES]
+SUMMARY_FILES = [f + category + '.txt' for f in SUMMARY_FILE\
+                 for category in TRIG_CATEGORIES]
 SUMMARY_PATH_STRUCT = (SUMMARY_HOME, ART, BRANCHES, PROJECTS,
                                 PLATFORMS, SAMPLES, SUMMARY_FILES)

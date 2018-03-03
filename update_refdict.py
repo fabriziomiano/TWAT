@@ -9,8 +9,6 @@ from itertools import product
 from collections import defaultdict
 from settings.constants import *
 
-RANGE_ACCEPTED = 0.05
-REFS_PATH = os.path.join(PROJECT_HOME, 'edm.json')
 nested_dict = lambda: defaultdict(nested_dict)
 
 
@@ -61,7 +59,9 @@ def update_refs(info, path):
     updated_edm = add_ref(info, edm)
     edm_inserter(updated_edm, path)
 
-    
+
+print "\t Now Reading files(s) to create references"
+
 for pattern_fields in product(*SUMMARY_PATH_STRUCT):
     pattern = os.path.join(*pattern_fields)
     for summary_file in glob.glob(pattern):
@@ -83,3 +83,5 @@ for pattern_fields in product(*SUMMARY_PATH_STRUCT):
             info = ([branch, project, platform, sample, category], size)
 
             update_refs(info, REFS_PATH)
+
+print "\t References added to file ", REFS_PATH
