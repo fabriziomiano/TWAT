@@ -6,6 +6,8 @@ import gzip
 import shutil
 from settings.constants import *
 
+DATE_FMT = "%Y-%m-%dT%H%M"
+
 
 def get_logger(name):
     """ 
@@ -35,7 +37,11 @@ def timestamp_to_datetime(timestamp):
     e.g. 2018-02-03T2135 -> datetime.datetime(2018, 2, 3, 21, 35)
 
     """
-    return dt.datetime.strptime(timestamp, "%Y-%m-%dT%H%M")
+    return dt.datetime.strptime(timestamp, DATE_FMT)
+
+
+def datetime_to_timestamp(datetime):
+    return datetime.strftime(DATE_FMT)
 
 
 def set_summary_path(input_info):
