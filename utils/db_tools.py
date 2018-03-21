@@ -397,10 +397,7 @@ def html_table(*columns):
 
     html = textwrap.dedent(
         """
-        <style>
-        table, th, td{border:1px}
-        </style>
-        <table>
+        <table border="3">
         """
     )
     html += '  <tr>\n'
@@ -413,7 +410,7 @@ def html_table(*columns):
         for element in row:
             content, color = element
             html += ('    <td style="background-color:' +
-                     color + '">' + str(content) + '</td>\n')
+                     color + '" align="center" >' + str(content) + '</td>\n')
         html += '  </tr>\n'
 
     html += '</table>\n'
@@ -468,13 +465,13 @@ def table_content(db, item_info,
         if entries < max_entries:
             dates.append((date, out_of_range_colour))
             sizes.append((ordered[date], out_of_range_colour))
-            ref = test_to_archive(item_info, date)  # glob in future
+            ref = test_to_archive(item_info, date) + '.gz' # glob in future
             alias = os.path.basename(ref)  # to change with glob.glob()
             links.append((make_link(ref, alias), out_of_range_colour))
             out_of_range_colour = ''
     dates = ('Date', dates)
-    sizes = ('Size', sizes)
-    links = ('Link', links)
+    sizes = ('Size/Evt (kB)', sizes)
+    links = ('Link to archived file', links)
     if redirect:
         return [dates, sizes, links]
     elif not redirect:
@@ -627,29 +624,29 @@ def bad_list_page(contents):
         '''
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html>
-          <head>
-            <title>Main</title>
-            <link rel="stylesheet"type="text/css" href="css/def.css">
-            <style type="text/css">
-              body,table{font-family:sans-serif}
-              .tab{margin-left:40px;}
-            </style>
-          </head>
-          <body>
-          <div id="container";align="center">
-          <font size="6">          
-          ATLAS EDM Trigger Size Monitoring by Trigne
-          </font>
-          </p>
-          </div>
-          <p> 
-          </br>
-          The following is a list of the most recent EDM size tests that
-          fall outside the nominal range. Click on the links to go to a
-          summary of the results.
-          </p>
-          </div><!--container-->
-        <hr/>
+            <head>
+                <title>Main</title>
+                <link rel="stylesheet" type="text/css" href="css/def.css">
+                <style type="text/css">\
+                    body {font-family: verdana}
+                    table {font-family: arial}
+                    .tab { margin-left: 40px; }
+                </style>
+            </head>
+        <body>
+            <div id="container">
+            <div align="center">
+            <font size="6">
+                ATLAS EDM Trigger Size Homepage
+            </font>
+            </p>
+            </div>
+            <p> 
+            </br>
+            This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
+            Click on the links to go to summary of the results.
+            </p>
+            <hr/>
         '''
     )
     for header in contents:
@@ -1010,18 +1007,20 @@ def make_plot(db, item_info, from_home=False):
 
     """
     ordered = last_to_first(db, item_info)
-    Xdate = [key for key in ordered if ordered[key] > 0]
+    ordered = OrderedDict((key, ordered[key]) for key in reversed(ordered))
+    Xdate = [timestamp_to_datetime(key).date() for key in ordered if ordered[key] > 0] 
     Ysize = [float(ordered[key]) for key in ordered if ordered[key] > 0]
+
     if len(Ysize) > 0:
         item = get_item(db, item_info)
         plottitle = item_string(item_info, separator='/')
         imagesHome = os.path.join(WWW_HOME, IMAGES_FOLDER)
         plotfile = os.path.join(imagesHome,
                                 item_string(item_info) + '.png')
-        # xfmt = dates.DateFormatter('%Y %b %d')
+        xfmt = dates.DateFormatter('%d %b %Y')
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # ax.xaxis.set_major_formatter(xfmt)
+        ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
 
         plt.plot_date(Xdate, Ysize, 'bo-')
@@ -1029,7 +1028,7 @@ def make_plot(db, item_info, from_home=False):
         plt.xlim(Xdate[0], Xdate[-1])
         #plt.xlim(Xdate[0]-datetime.timedelta(days=1), Xdate[-1]+datetime.timedelta(days=1))
         plt.ylim(0, max(Ysize)*1.1)
-        plt.xticks(rotation='vertical')
+        plt.xticks(rotation=45)
         plt.xlabel('Date')
         plt.ylabel('Size/Evt (kb)')
         plt.gcf().subplots_adjust(bottom=0.25)
