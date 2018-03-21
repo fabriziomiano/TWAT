@@ -1,0 +1,45 @@
+{
+    "master": {
+        "M12": {
+            "x86_64-slc6-gcc62-opt": {
+                "test_mc_pp_v7_rdotoesdaod_grid": {
+                    "Bjet": {
+                        "2018-03-13T1439": 1.9,
+                        "2018-03-10T1719": 0.98,
+                        "reference": 2
+                    }
+                }
+            }
+        },
+        "Athena": {
+            "x86_64-slc6-gcc62-opt": {
+                "test_mc_pp_v7_rdotoesdaod_grid": {
+                    "Squark": {
+                        "2018-03-03T1039": 1.9,
+                        "2018-03-04T1119": 0.98,
+                        "reference": 1
+                    }
+                }
+            }
+        }
+    },
+    "21.0": {
+        "Athena": {
+            "x86_64-slc6-gcc62-opt": {
+                "test_mc_pp_v7_rdotoesdaod_grid": {
+                    "Squark": {
+                        "2018-03-08T1234": 0.956,
+                        "2018-03-04T1133": 2,
+                        "reference": 1,
+                        "2018-03-09T1031": 3
+                    },
+                    "Jet": {
+                        "2018-03-08T2341": 0.98,
+                        "reference": 1,
+                        "2018-03-07T1808": 4
+                    }
+                }
+            }
+        }
+    }
+}
