@@ -469,8 +469,8 @@ def table_content(db, item_info,
             alias = os.path.basename(ref)  # to change with glob.glob()
             links.append((make_link(ref, alias), out_of_range_colour))
             out_of_range_colour = ''
-    dates = ('Date', dates)
-    sizes = ('Size/Evt (kB)', sizes)
+    dates = ('Date [yyyy-mm-ddThhmm]', dates)
+    sizes = ('Size/Evt [kB]', sizes)
     links = ('Link to archived file', links)
     if redirect:
         return [dates, sizes, links]
@@ -637,7 +637,7 @@ def bad_list_page(contents):
             <div id="container">
             <div align="center">
             <font size="6">
-                ATLAS EDM Trigger Size Homepage
+                ATLAS EDM Trigger Size Monitoring Homepage
             </font>
             </p>
             </div>
@@ -1017,20 +1017,20 @@ def make_plot(db, item_info, from_home=False):
         imagesHome = os.path.join(WWW_HOME, IMAGES_FOLDER)
         plotfile = os.path.join(imagesHome,
                                 item_string(item_info) + '.png')
-        xfmt = dates.DateFormatter('%d %b %Y')
+        xfmt = dates.DateFormatter('%d / %b / %y')
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
 
-        plt.plot_date(Xdate, Ysize, 'bo-')
+        plt.plot_date(Xdate, Ysize,'bo-')
         plt.title(plottitle, fontsize=10)
         plt.xlim(Xdate[0], Xdate[-1])
         #plt.xlim(Xdate[0]-datetime.timedelta(days=1), Xdate[-1]+datetime.timedelta(days=1))
         plt.ylim(0, max(Ysize)*1.1)
-        plt.xticks(rotation=45)
-        plt.xlabel('Date')
-        plt.ylabel('Size/Evt (kb)')
+        plt.xticks(rotation=30)
+        plt.xlabel('Date [dd/mm/yyyy]')
+        plt.ylabel('Size/Evt [kb]')
         plt.gcf().subplots_adjust(bottom=0.25)
 
         plt.savefig(plotfile)
