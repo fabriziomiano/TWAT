@@ -922,11 +922,11 @@ def make_sidemenu(menu_items,
     html += make_head(title, base_target='Right')
     html += textwrap.dedent(
         '''
-        <body bgcolor="black">
+        <body bgcolor="white">
         <center>
         <nav>
         <ul>
-        <li><a target="main" href="main.html">Home</a></li>
+        <li><a target="main" href="main.html"><b>Home</b></a></li>
         </ul>
         </nav>
         <nav>
