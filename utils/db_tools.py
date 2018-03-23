@@ -28,9 +28,8 @@ TEMPLATE_FIELDS = [
 ]
 DATE_FMT = "%Y-%m-%dT%H%M"
 HTML_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 ' +\
-    'Transitional//EN" ' + \
-    '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
-
+     'Transitional//EN" ' + \
+     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
 
 def nested_dict(): return defaultdict(nested_dict)
 
@@ -469,7 +468,7 @@ def table_content(db, item_info,
             alias = os.path.basename(ref)  # to change with glob.glob()
             links.append((make_link(ref, alias), out_of_range_colour))
             out_of_range_colour = ''
-    dates = ('Date [yyyy-mm-ddThhmm]', dates)
+    dates = ('Date', dates)
     sizes = ('Size/Evt [kB]', sizes)
     links = ('Link to archived file', links)
     if redirect:
@@ -622,29 +621,29 @@ def bad_list_page(contents):
     """
     html = textwrap.dedent(
         '''
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <!DOCTYPE html>
         <html>
-            <head>
-                <title>Main</title>
-                <link rel="stylesheet" type="text/css" href="css/def.css">
-                <style type="text/css">\
-                    body {font-family: verdana}
-                    table {font-family: arial}
-                    .tab { margin-left: 40px; }
-                </style>
+          <head>
+            <title>Main</title>
+            <link rel="stylesheet" type="text/css" href="css/style.css">
+              <style type="text/css">
+                body {font-family: verdana}
+                table {font-family: arial}
+                .tab { margin-left: 40px; }
+              </style>
             </head>
-        <body>
-            <div id="container">
-            <div align="center">
-            <font size="6">
-                ATLAS EDM Trigger Size Monitoring Homepage
-            </font>
-            </p>
-            </div>
-            <p> 
-            </br>
-            This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
-            Click on the links to go to summary of the results.
+            <body>
+              <div id="container">
+                <div align="center">
+                  <font size="6">
+                    ATLAS EDM Trigger Size Monitoring Homepage
+                  </font>
+                </p>
+              </div>
+              <p> 
+              </br>
+              This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
+              Click on the links to go to summary of the results.
             </p>
             <hr/>
         '''
@@ -918,24 +917,35 @@ def make_sidemenu(menu_items,
 
     """
     html = HTML_DOCTYPE
-    title = 'Menu'
-    html += make_head(title, base_target='Right')
+    # title = 'Menu'
+    # html += make_head(title, base_target='Right')
     html += textwrap.dedent(
         '''
-        <body bgcolor="white">
-        <center>
-        <nav>
-        <ul>
-        <li><a target="main" href="main.html"><b>Home</b></a></li>
-        </ul>
-        </nav>
-        <nav>
-        <ul>
+        <html lang="en">
+          <head>
+            <title>Menu</title>
+            <link rel="stylesheet" type="text/css" href="css/style.css"><base target="Right"/>
+
+              <style type="text/css">
+                body {font-family: sans-serif}
+                table {font-family: sans-serif}
+              </style>
+              <script type="text/javascript">
+              </script>
+            </head>
+
+            <body bgcolor="white">
+              <center>
+                <nav>
+                  <a class="button -alge center" target="main" href="main.html"><b>Home</b></a>
+                </nav>
+                <nav>
+                  <ul>
     '''
     )
     for item in menu_items:
         ref, alias = item
-        html += '<li><a target="main" href="' + ref + '">'
+        html += '<li><a class="button -dark center"  target="main" href="' + ref + '">'
         html += '<br/>'.join([word for word in alias.split()])
         html += '</a></li>\n'
     html += textwrap.dedent(
@@ -1022,14 +1032,15 @@ def make_plot(db, item_info, from_home=False):
         ax = fig.add_subplot(111)
         ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+        ax.grid(which='major', color='k', linestyle='--', linewidth=0.3)        
 
         plt.plot_date(Xdate, Ysize,'bo-')
         plt.title(plottitle, fontsize=10)
         plt.xlim(Xdate[0], Xdate[-1])
         #plt.xlim(Xdate[0]-datetime.timedelta(days=1), Xdate[-1]+datetime.timedelta(days=1))
         plt.ylim(0, max(Ysize)*1.1)
-        plt.xticks(rotation=30)
-        plt.xlabel('Date [dd/mm/yyyy]')
+        plt.xticks(rotation=25)
+        plt.xlabel('Date')
         plt.ylabel('Size/Evt [kb]')
         plt.gcf().subplots_adjust(bottom=0.25)
 
