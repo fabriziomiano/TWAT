@@ -16,6 +16,7 @@ from utils.misc import *
 from settings.constants import *
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
 from utils.misc import utils_log
+import copy
 
 splash_screen(TODAY, WEEKDAY)
 
@@ -44,6 +45,13 @@ utils_log.addHandler(file_handler)
 utils_log.addHandler(email_handler)
 
 
+TEMPLATE_FIELDS = [
+    'branch', 'project', 'platform', 'sample', 'category'
+]
+DB_PATH = 'archive_db.json'
+
+
+edm = EDM(DB_PATH, TEMPLATE_FIELDS)
 for pattern_fields in product(*INPUT_PATH_STRUCT):
     pattern = os.path.join(*pattern_fields)
     for file_toarchive in glob.glob(pattern):
@@ -64,6 +72,14 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
         create_nonexistent_archive(summary_path)
             
         trigger_categories, total_size = get_trigsize(destination_file)
+        timestamp = input_info.pop("datetime")
+        for trigger_category in trigger_categories:
+            category = trigger_category[0]
+            new_item = copy.deepcopy(input_info)
+            new_item.update({'category': category})
+            value = {datetime_to_timestamp(timestamp): trigger_category[1]}
+            edm.add_test(new_item, value)
+            
         write_triginfo_to_file(input_info, summary_path,
                                trigger_categories, total_size)
 
