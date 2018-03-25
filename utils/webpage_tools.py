@@ -1,5 +1,35 @@
-from classes.EDM import EDM
+import os
+import textwrap
+from collections import OrderedDict
+from classes.EDM import EDM 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib import dates
+from matplotlib.ticker import FormatStrFormatter
+from utils.misc import timestamp_to_datetime, set_archive_path, is_date, nested_dict
 
+WWW_HOME = 'webpage'
+IMAGES_FOLDER = 'images'
+RESULTS_FOLDER = 'results_html'
+OVERVIEW_FOLDER = 'overview_html'
+SAMPLE_FOLDER = 'sample_html'
+RANGE_ACCEPTED = 0.05
+TEMPLATE_FIELDS = [
+    'branch', 'project', 'platform', 'sample', 'category'
+]
+DATE_FMT = "%Y-%m-%dT%H%M"
+HTML_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 ' +\
+     'Transitional//EN" ' + \
+     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+
+
+def date_in_keys(item):
+    """ Return first encountered date found in item keys """
+    for key in item:
+        if is_date(key):
+            return key
+    return None
 
 
 def bad_page_contents(edm, header_fields, levels_from_page=0):
@@ -21,7 +51,7 @@ def bad_page_contents(edm, header_fields, levels_from_page=0):
     for bad in bad_list:
         header = tuple((field, bad[field]) for field in header_fields)
         date = date_in_keys(bad)
-        link = sample_link(bad, levels_from_page)
+        link = sample_link(edm, bad, levels_from_page)
         category = TEMPLATE_FIELDS[-1]
         items_inlist = container[header].get(bad[category])
         if not items_inlist:
@@ -83,13 +113,9 @@ def html_table(*columns):
     rows = [tuple(data.keys())] + list(zip(*data.values()))
     headers = rows.pop(0)
 
-    html = textwrap.dedent(
-        """
-        <style>
-        table, th, td{border:1px}
-        </style>
-        <table>
-        """
+    html = textwrap.dedent('''
+        <table border="3">
+    '''
     )
     html += '  <tr>\n'
     for header in headers:
@@ -101,7 +127,7 @@ def html_table(*columns):
         for element in row:
             content, color = element
             html += ('    <td style="background-color:' +
-                     color + '">' + str(content) + '</td>\n')
+                     color + '" align="center">' + str(content) + '</td>\n')
         html += '  </tr>\n'
 
     html += '</table>\n'
@@ -109,11 +135,18 @@ def html_table(*columns):
 
 
 def make_link(ref, alias, color=''):
-    link = (
-        '&nbsp;&nbsp; <a style="color:' + color + ';"' +
-        'href="' + ref + '">' +
-        alias + '</a>&nbsp;&nbsp;'
-    )
+    if color == 'red':
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '">' +
+            '<b>' + alias + '</b></a>&nbsp;&nbsp;'
+        )
+    else:
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '">' +
+            alias + '</a>&nbsp;&nbsp;'
+        )
     return link
 
 
@@ -156,7 +189,7 @@ def table_content(edm, item_info,
         if entries < max_entries:
             dates.append((date, out_of_range_colour))
             sizes.append((ordered[date], out_of_range_colour))
-            ref = test_to_archive(item_info, date)  # glob in future
+            ref = edm.test_to_archive(item_info, date)  # glob in future
             alias = os.path.basename(ref)  # to change with glob.glob()
             links.append((make_link(ref, alias), out_of_range_colour))
             out_of_range_colour = ''
@@ -248,9 +281,9 @@ def make_dropdown(edm, level,
     <form>
     '''
     )
-    overview_string = item_string(level)
+    overview_string = edm.item_string(level)
     overview_file = 'overview_' + overview_string + '.html'
-    field = depth_field(level)
+    field = edm.depth_field(level)
     html += '<label>' + field.title() + ': </label>\n'
     html += '<select onchange="goToPage(this.options[this.selectedIndex].value)">\n'
     html += '<option selected>' + selected_menu + '</option>\n'
@@ -282,7 +315,7 @@ def badlist_category(category, contents):
 
     """
     html = '<div id="container">\n'
-    html += 'Category - ' + category + '</br>\n'
+    html += '<b>' + category + '</b></br>\n'
     html += '<p class="tab">\n'
     for item in contents:
         for i, word in enumerate(item):
@@ -300,34 +333,36 @@ def bad_list_page(contents):
     contents (dict of dicts) -- see returns of bad_page_contents
 
     """
-    html = textwrap.dedent(
-        '''
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-        <html>
-          <head>
-            <title>Main</title>
-            <link rel="stylesheet"type="text/css" href="css/def.css">
-            <style type="text/css">
-              body,table{font-family:sans-serif}
-              .tab{margin-left:40px;}
-            </style>
-          </head>
-          <body>
-          <div id="container";align="center">
-          <font size="6">          
-          ATLAS EDM Trigger Size Monitoring by Trigne
-          </font>
-          </p>
+    html = textwrap.dedent('''
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Main</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+          <style type="text/css">
+            body {font-family: verdana}
+            table {font-family: arial}
+            .tab { margin-left: 40px; }
+          </style>
+        </head>
+        <body>
+          <div id="container">
+            <div align="center">
+              <font size="6">
+                <b><i>ATLAS</i> EDM Trigger Size Monitoring Homepage</b>
+              </font>
+            </p>
           </div>
           <p> 
           </br>
-          The following is a list of the most recent EDM size tests that
-          fall outside the nominal range. Click on the links to go to a
-          summary of the results.
-          </p>
-          </div><!--container-->
+            <div align="center">
+              <hr/>
+              This page lists <b>only</b> the tests that fall outside the nominal range.<br/>
+              Click on the links to monitor the test or use the menu on the left to navigate. 
+            </div>
+        </p>
         <hr/>
-        '''
+    '''
     )
     for header in contents:
         html += badlist_box(header, contents[header])
@@ -380,10 +415,10 @@ def category_box(edm, item_info):
     html += item_info['category']
     ref = '../results_html/results_' + edm.item_string(item_info) + \
           '.html'
-    alias = 'full results'
+    alias = 'see full results'
     reference = edm.get_item(item_info).get('reference')
-    html += '( <a href="' + ref + '" target="_blank"> <b>' + \
-        alias + '</b></a> )</br>\n'
+    html += ' <a href="' + ref + '" target="_blank"> <b> &#8594; ' + \
+        alias + '</b></a></br>\n'
     html += '<font size="3">Nominal = ' + str(reference) + '</font>\n'
     html += '<br></br>\n'
 
@@ -398,7 +433,7 @@ def category_box(edm, item_info):
     <div id="right">
     '''
     )
-    html += plot_link(item_info, levels_from_page=2)
+    html += plot_link(edm, item_info, levels_from_page=2)
     html += textwrap.dedent(
         '''
     </div><!-- right -->      
@@ -423,8 +458,8 @@ def make_head(title, html_type='',
     html += textwrap.dedent(
         '''
     <style type="text/css">
-      body {font-family: sans-serif}
-      table {font-family: sans-serif}
+        body {font-family: verdana}
+        table {font-family: arial}
     </style>
     <script type="text/javascript">
     </script>
@@ -466,17 +501,17 @@ def make_category_links(edm, super_level):
     super_level should contain categories as its keys
 
     """
-    html = textwrap.dedent(
-        '''
+    html = textwrap.dedent('''
+    <br><div align="center">
+    Click on the category to jump to its section:
+    in red the category whose test fall outside the nominal range 
+    </div>
     <br>
-    Click on links below to jump to results section on this page
-    (red links indicate problems)
-    </br>
     '''
     )
     super_category = edm.get_level(super_level)
     for category in super_category:
-        category_key = depth_field(super_level)
+        category_key = edm.depth_field(super_level)
         item_info = dict(super_level)
         item_info.update({category_key: category})
         link_color = 'red' if edm.is_red_item(item_info) else ''
@@ -485,6 +520,7 @@ def make_category_links(edm, super_level):
         html += make_link(ref, alias, color=link_color)
     html += '</div><!-- container -->\n'
     return html
+
 
 def html_sample_header(edm, level, selected_menu,
                        style_path='../css/def.css'):
@@ -506,7 +542,7 @@ def html_sample_header(edm, level, selected_menu,
     html += make_dropdown(edm, level, selected_menu)
     # header: links to categories
     sample_level = dict(level)
-    sample_key = depth_field(level)
+    sample_key = edm.depth_field(level)
     sample_level.update({sample_key: selected_menu})
     html += make_category_links(edm, sample_level)
     return html
@@ -522,7 +558,7 @@ def sample_page(edm, level, selected_menu):
 
     """
     html = html_sample_header(edm, level, selected_menu)
-    sample_key = depth_field(level)
+    sample_key = edm.depth_field(level)
     samples = dict(level)
     samples.update({sample_key: selected_menu})
     categories = edm.get_level(samples)
@@ -544,24 +580,32 @@ def make_sidemenu(menu_items,
 
     """
     html = HTML_DOCTYPE
-    title = 'Menu'
-    html += make_head(title, base_target='Right')
-    html += textwrap.dedent(
-        '''
-        <body bgcolor="black">
-        <center>
-        <nav>
-        <ul>
-        <li><a target="main" href="main.html">Home</a></li>
-        </ul>
-        </nav>
-        <nav>
-        <ul>
+    html += textwrap.dedent( '''
+    <html lang="en">
+      <head>
+        <title>Menu</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css"><base target="Right"/>
+
+          <style type="text/css">
+            body {font-family: sans-serif}
+            table {font-family: sans-serif}
+          </style>
+          <script type="text/javascript">
+          </script>
+        </head>
+
+        <body bgcolor="white">
+          <center>
+            <nav>
+              <a class="button -dark center" target="main" href="main.html">Home</a>
+            </nav>
+            <nav>
+              <ul>
     '''
     )
     for item in menu_items:
         ref, alias = item
-        html += '<li><a target="main" href="' + ref + '">'
+        html += '<li><a class="button -regular center" target="main" href="' + ref + '">'
         html += '<br/>'.join([word for word in alias.split()])
         html += '</a></li>\n'
     html += textwrap.dedent(
@@ -633,7 +677,8 @@ def make_plot(edm, item_info, from_home=False):
 
     """
     ordered = edm.first_to_last(item_info)
-    Xdate = [key for key in ordered if ordered[key] > 0]
+    # Xdate = [key for key in ordered if ordered[key] > 0]
+    Xdate = [timestamp_to_datetime(key).date() for key in ordered if ordered[key] > 0]
     Ysize = [float(ordered[key]) for key in ordered if ordered[key]>0]
     if len(Ysize) > 0:
         item = edm.get_item(item_info)
@@ -641,18 +686,19 @@ def make_plot(edm, item_info, from_home=False):
         imagesHome = os.path.join(WWW_HOME, IMAGES_FOLDER)
         plotfile = os.path.join(imagesHome,
                                 edm.item_string(item_info) + '.png')
-        # xfmt = dates.DateFormatter('%Y %b %d')
+        xfmt = dates.DateFormatter('%d / %b / %y')
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # ax.xaxis.set_major_formatter(xfmt)
+        ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+        ax.grid(which='major', color='k', linestyle='--', linewidth=0.3)        
 
         plt.plot_date(Xdate, Ysize, 'bo-')
         plt.title(plottitle, fontsize=10)
         plt.xlim(Xdate[0], Xdate[-1])
         #plt.xlim(Xdate[0]-datetime.timedelta(days=1), Xdate[-1]+datetime.timedelta(days=1))
         plt.ylim(0, max(Ysize)*1.1)
-        plt.xticks(rotation='vertical')
+        plt.xticks(rotation=25)
         plt.xlabel('Date')
         plt.ylabel('Size/Evt (kb)')
         plt.gcf().subplots_adjust(bottom=0.25)
@@ -693,3 +739,48 @@ def sample_path(fields, from_home=False):
         if from_home \
         else os.path.join(WWW_HOME, SAMPLE_FOLDER, sample_file)
     return path
+
+
+def write_html(path, html_lines):
+    f = open(path, 'w')
+    for line in html_lines:
+        f.write(line)
+    f.close()
+
+
+def badlist_box(header, contents):
+    """
+    Return html text diplaying bad items for the given header
+
+    Args:
+    header (tuple) -- tuple containing bad items infos
+    e.g. (branch, project, platform)
+    to diplay bad items of
+    contents (dict) --
+    keys: categories with bad items
+    values (list(tuple)) -- see returns of bad_page_contents() 
+
+    """
+    html = ''
+    html += textwrap.dedent(
+        '''
+    <div id="container">
+    <font size="4">  
+    '''
+    )
+    for i, word in enumerate(header):
+        field, name = word
+        #title = field.title() + ': ' + name
+        title = name
+        html += '<b>' + title + '</b> ' \
+                if i < len(header)-1 else '[' + title + ']'
+    html += textwrap.dedent(
+        '''
+    </font>
+    </p>
+    '''
+    )
+    for category in contents:
+        html += badlist_category(category, contents[category])
+    html += '    </div><!--container-->\n'
+    return html
