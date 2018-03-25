@@ -417,11 +417,18 @@ def html_table(*columns):
 
 
 def make_link(ref, alias, color=''):
-    link = (
-        '&nbsp;&nbsp; <a style="color:' + color + ';"' +
-        'href="' + ref + '">' +
-        alias + '</a>&nbsp;&nbsp;'
-    )
+    if color == 'red' :
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '"><b>' +
+            alias + '</b></a>&nbsp;&nbsp;'
+        )
+    else:
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '">' +
+            alias + '</a>&nbsp;&nbsp;'
+        )
     return link
 
 
@@ -565,7 +572,7 @@ def badlist_category(category, contents):
 
     """
     html = '<div id="container">\n'
-    html += 'Category - ' + category + '</br>\n'
+    html += category + '</br>\n'
     html += '<p class="tab">\n'
     for item in contents:
         for i, word in enumerate(item):
@@ -597,7 +604,8 @@ def badlist_box(header, contents):
     )
     for i, word in enumerate(header):
         field, name = word
-        title = field.title() + ': ' + name
+        #title = field.title() + ': ' + name
+        title = name
         html += title + '; ' if i < len(header)-1 else title
     html += textwrap.dedent(
         '''
@@ -642,8 +650,11 @@ def bad_list_page(contents):
               </div>
               <p> 
               </br>
-              This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
-              Click on the links to go to summary of the results.
+                <div align="center">
+                  <hr/>
+                  This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
+                  Click on the links to go to summary of the results.
+                </div>
             </p>
             <hr/>
         '''
