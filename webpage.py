@@ -1,14 +1,17 @@
 import os
-from utils.db_tools import bad_page_contents, bad_list_page, \
-    write_html,WWW_HOME, OVERVIEW_FOLDER, RESULTS_FOLDER, \
-    SAMPLE_FOLDER, IMAGES_FOLDER, sidemenu_items, make_sidemenu,\
-    field_products, overview, overview_path, get_level, sample_page, \
-    sample_path, iterinfo, result_page, results_path, info_tupler, \
-    TEMPLATE_FIELDS, db_loader, make_plot, get_item
+from utils.webpage_tools import make_plot, WWW_HOME, OVERVIEW_FOLDER, \
+    RESULTS_FOLDER, SAMPLE_FOLDER, IMAGES_FOLDER, bad_page_contents, write_html, \
+    bad_list_page, sidemenu_items, make_sidemenu, overview, overview_path, \
+    sample_path, image_path, results_path, result_page, sample_page
 from utils.misc import create_nonexistent_archive
+from classes.EDM import EDM
+
 
 xlmns = 'xmlns="http://www.w3.org/1999/xhtml"'
 DB_PATH = 'edm_db.json'
+TEMPLATE_FIELDS = [
+    'branch', 'project', 'platform', 'sample', 'category'
+]
 
 create_nonexistent_archive(WWW_HOME)
 create_nonexistent_archive(os.path.join(WWW_HOME, IMAGES_FOLDER))
@@ -18,42 +21,42 @@ create_nonexistent_archive(os.path.join(WWW_HOME, SAMPLE_FOLDER))
 create_nonexistent_archive(os.path.join(WWW_HOME, IMAGES_FOLDER))
 
 
-db = db_loader(DB_PATH)
-
+# db = db_loader(DB_PATH)
+edm = EDM(DB_PATH,TEMPLATE_FIELDS)
 
 # plots
-for item in iterinfo(db, list(TEMPLATE_FIELDS)):
-    make_plot(db, item)
+for i, item_info in enumerate(edm.item_infos()):
+    make_plot(edm, item_info)
 
 # main.html
 header_fields = ('branch', 'project', 'platform')
-contents = bad_page_contents(db, header_fields)
+contents = bad_page_contents(edm, header_fields)
 path = os.path.join(WWW_HOME, 'main.html')
 write_html(path, bad_list_page(contents))
 
 # menu.html
 fields = ['branch', 'project', 'platform']
-menu_contents = sidemenu_items(db, fields)
+menu_contents = sidemenu_items(edm, fields)
 path = os.path.join(WWW_HOME, 'menu.html')
 write_html(path, make_sidemenu(menu_contents))
 
 # overview, sample and results files
 overview_fields = ['branch', 'project', 'platform']
-for product in field_products(db, overview_fields):
+for product in edm.field_products(overview_fields):
     overview_tuple = tuple(zip(overview_fields, product))
-    html = overview(db, overview_tuple)
+    html = overview(edm, overview_tuple)
     path = overview_path(product)
     write_html(path, html)
     
     level = dict(zip(overview_fields, product))
-    for selected_sample in get_level(db, level):
-        html = sample_page(db, level, selected_sample)
+    for selected_sample in edm.get_level(level):
+        html = sample_page(edm, level, selected_sample)
         sample_fields = list(product) + [selected_sample]
         path = sample_path(sample_fields)
         write_html(path, html)
 
-for item_info in iterinfo(db, list(TEMPLATE_FIELDS)):
-    html = result_page(db, item_info)
-    fields = info_tupler(item_info)
+for item_info in edm.item_infos():
+    html = result_page(edm, item_info)
+    fields = edm.info_tupler(item_info)
     path = results_path(fields)
     write_html(path, html)
