@@ -572,7 +572,7 @@ def badlist_category(category, contents):
 
     """
     html = '<div id="container">\n'
-    html += category + '</br>\n'
+    html += '<b>' + category + '</b></br>\n'
     html += '<p class="tab">\n'
     for item in contents:
         for i, word in enumerate(item):
@@ -606,7 +606,7 @@ def badlist_box(header, contents):
         field, name = word
         #title = field.title() + ': ' + name
         title = name
-        html += title + '; ' if i < len(header)-1 else title
+        html += '<b>' + title + '</b>; ' if i < len(header)-1 else  title
     html += textwrap.dedent(
         '''
     </font>
@@ -652,8 +652,8 @@ def bad_list_page(contents):
               </br>
                 <div align="center">
                   <hr/>
-                  This page lists the most recent EDM size tests that fall outside the nominal range.<br/>
-                  Click on the links to go to summary of the results.
+                  This page lists <b>only</b> the tests that fall outside the nominal range.<br/>
+                  Click on the links to monitor the test or use the menu on the left to navigate. 
                 </div>
             </p>
             <hr/>
@@ -948,7 +948,7 @@ def make_sidemenu(menu_items,
             <body bgcolor="white">
               <center>
                 <nav>
-                  <a class="button -alge center" target="main" href="main.html"><b>Home</b></a>
+                  <a class="button -dark center" target="main" href="main.html">Home</a>
                 </nav>
                 <nav>
                   <ul>
@@ -956,7 +956,7 @@ def make_sidemenu(menu_items,
     )
     for item in menu_items:
         ref, alias = item
-        html += '<li><a class="button -dark center"  target="main" href="' + ref + '">'
+        html += '<li><a class="button -regular center"  target="main" href="' + ref + '">'
         html += '<br/>'.join([word for word in alias.split()])
         html += '</a></li>\n'
     html += textwrap.dedent(
