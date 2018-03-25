@@ -606,7 +606,8 @@ def badlist_box(header, contents):
         field, name = word
         #title = field.title() + ': ' + name
         title = name
-        html += '<b>' + title + '</b>; ' if i < len(header)-1 else  title
+        html += '<b>' + title + '</b> ' \
+                if i < len(header)-1 else '[' + title + ']'
     html += textwrap.dedent(
         '''
     </font>
@@ -709,10 +710,10 @@ def category_box(db, item_info):
     html += '  <p>\n'
     html += item_info['category']
     ref = '../results_html/results_' + item_string(item_info) + '.html'
-    alias = 'full results'
+    alias = 'see full results'
     reference = get_item(db, item_info).get('reference')
-    html += '( <a href="' + ref + '" target="_blank"> <b>' + \
-        alias + '</b></a> )</br>\n'
+    html += ' - <a href="' + ref + '" target="_blank"> <b>' + \
+        alias + '</b></a> </br>\n'
     html += '<font size="3">Nominal = ' + str(reference) + '</font>\n'
     html += '<br></br>\n'
 
