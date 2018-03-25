@@ -1,23 +1,16 @@
 from utils.misc import timestamp_to_datetime, set_archive_path
-from dateutil.parse import parse
+from dateutil.parser import parse
 from collections import OrderedDict
+from classes.TaxoDB import TaxoDB
 import copy
 
 REFERENCE_KEY = 'reference'
 RANGE_ACCEPTED = 0.05
 
 
-def is_date(string):
-    try:
-        parse(string)
-        return True
-    except ValueError:
-        return False
-
-
 class EDM(TaxoDB):
     def __init__(self, path, template):
-        TaxoDB.__init__(path, template)
+        TaxoDB.__init__(self, path, template)
 
     def add_ref(self, item_info, ref_size):
         ref = {REFERENCE_KEY: ref_size}
@@ -33,7 +26,7 @@ class EDM(TaxoDB):
         if is_date(timestamp):
             self.add_item(item_info, test)
         else:
-            print("the key of given test dict is not 
+            print("the key of given test dict is not \
             a valid timestamp. Check documentation for more infos")
             
     def get_runs(self, item_info):
@@ -65,7 +58,8 @@ class EDM(TaxoDB):
         for date in ordered_runs:
             size = ordered_runs[date]
             if size > 0:
-                return size
+                #return size
+                return {date: size}
 
     def is_goodtest(self, item_info, size):
         item = self.get_item(item_info)
@@ -92,7 +86,7 @@ class EDM(TaxoDB):
         
         """
         item = self.get_item(item_info)
-        size_to_check = self.most_recent_nonzero(item_info)
+        size_to_check = self.most_recent_nonzero(item_info).values()[0]
         if self.is_goodtest(item_info, size_to_check):
             return False
         return True
@@ -134,6 +128,8 @@ class EDM(TaxoDB):
         bad_list = []
         for item_info in self.item_infos():
             if self.is_red_item(item_info):
+                last_test = self.most_recent_nonzero(item_info)
+                item_info.update(last_test)
                 bad_list.append(item_info)
         return bad_list
     
