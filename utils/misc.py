@@ -4,9 +4,14 @@ import os
 import errno
 import gzip
 import shutil
+from dateutil.parser import parse
+from collections import OrderedDict, defaultdict
 from settings.constants import *
 
 DATE_FMT = "%Y-%m-%dT%H%M"
+
+
+def nested_dict(): return defaultdict(nested_dict)
 
 
 def get_logger(name):
@@ -42,6 +47,14 @@ def timestamp_to_datetime(timestamp):
 
 def datetime_to_timestamp(datetime):
     return datetime.strftime(DATE_FMT)
+
+
+def is_date(string):
+    try:
+        parse(string)
+        return True
+    except ValueError:
+        return False
 
 
 def set_summary_path(input_info):
@@ -165,8 +178,17 @@ def get_trigsize(input_file, exc_raise=False):
     """
     For a given txt file it returns a tuple 
     with all the trigger categories and 
-    their sizes, plus the total size 
+    their sizes, plus the total size
 
+    Args:
+    input_file <string> -- a checkfiletrigsize containing lines such as 
+    'Trigger<category> <size>' (e.g. TriggerJet 2.1)
+    Returns:
+    tuple(trigger_categories, total_size) -- 
+    trigger_categories <list(list())> -- a list whose elements are lists
+    such as ['TriggerBjet', '2.2']
+    total_size <string> -- the sum of all the trigger category sizes
+    
     """
     try:
         trigger_categories = []
