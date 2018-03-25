@@ -1,12 +1,10 @@
 import os
 import json
 import copy
+from utils.misc import nested_dict
 from collections import defaultdict
 
 VALUES = 'values'
-
-
-def nested_dict(): return defaultdict(nested_dict)
 
 
 class TaxoDB(object):
@@ -22,7 +20,7 @@ class TaxoDB(object):
             db = json.load(f)
         else:
             db = {}
-            return db
+        return db
 
     def save(self):
         f = open(self.source, 'w')
@@ -74,11 +72,14 @@ class TaxoDB(object):
     def level_keys(self, level_info):
         return list(self.get_level(level_info).keys())
 
-    def item_infovalues(self):
-        group_names = list(self.template)
-        data = copy.deepcopy(self.db)
+    def item_infovalues(self, level=None, group_names=None):
+        if level is None and group_names is None:
+            level = self.db
+            group_names = self.template
+        group_names_copy = copy.deepcopy(group_names)
+        data = copy.deepcopy(level)
         try:
-            group, group_names = group_names[0], group_names[1:]
+            group, group_names_copy = group_names[0], group_names_copy[1:]
         except IndexError:  # most nested dict reached
             flattened = {}
             flattened[VALUES] = copy.deepcopy(data)
@@ -86,24 +87,28 @@ class TaxoDB(object):
             return
         try:
             for key, value in data.iteritems():
-                for flattened in item_infovalues(value, group_names):
+                for flattened in self.item_infovalues(value, group_names_copy):
                     flattened.update({group: key})
                     yield flattened
         except AttributeError:
             yield {group: data}
 
-    def item_infos(self):
-        group_names = list(self.template)
-        data = copy.deepcopy(self.db)
+    def item_infos(self, level=None,  group_names=None):
+        # group_names = list(self.template)
+        if level is None and group_names is None:
+            level = self.db
+            group_names = self.template
+        group_names_copy = copy.deepcopy(group_names)
+        data = copy.deepcopy(level)
         try:
-            group, group_names = group_names[0], group_names[1:]
+            group, group_names_copy = group_names[0], group_names_copy[1:]
         except IndexError:  # most nested dict reached
             flattened = {}
             yield flattened
             return
         try:
             for key, value in data.iteritems():
-                for flattened in item_infos(value, group_names):
+                for flattened in self.item_infos(value, group_names_copy):
                     flattened.update({group: key})
                     yield flattened
         except AttributeError:
@@ -158,8 +163,8 @@ class TaxoDB(object):
             comb = []
             for field in fields:
                 comb.append(item_info.get(field))
-                if comb not in products:
-                    products.append(comb)
+            if comb not in products:
+                products.append(comb)
         return products
 
     def updatable_copy(self):
@@ -172,3 +177,18 @@ class TaxoDB(object):
             else:
                 updatable[k] = v
         return updatable
+
+
+    def info_tupler(self, item_info):
+        """
+        From item_info dict return a tuple of all field names in 
+        their depth order (i.e. following self.template)
+        
+        Note that this works also if item_info is not complete, i.e.
+        is a level dict (see get_level() for infos), but tuple
+        will be shorter than TEMPLATE_FIELDS
+        
+        """
+        infos = tuple(item_info[field] for field in self.template
+                      if item_info.get(field) is not None)
+        return infos
