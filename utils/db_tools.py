@@ -28,9 +28,8 @@ TEMPLATE_FIELDS = [
 ]
 DATE_FMT = "%Y-%m-%dT%H%M"
 HTML_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 ' +\
-    'Transitional//EN" ' + \
-    '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
-
+     'Transitional//EN" ' + \
+     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
 
 def nested_dict(): return defaultdict(nested_dict)
 
@@ -397,10 +396,7 @@ def html_table(*columns):
 
     html = textwrap.dedent(
         """
-        <style>
-        table, th, td{border:1px}
-        </style>
-        <table>
+        <table border="3">
         """
     )
     html += '  <tr>\n'
@@ -413,7 +409,7 @@ def html_table(*columns):
         for element in row:
             content, color = element
             html += ('    <td style="background-color:' +
-                     color + '">' + str(content) + '</td>\n')
+                     color + '" align="center" >' + str(content) + '</td>\n')
         html += '  </tr>\n'
 
     html += '</table>\n'
@@ -421,11 +417,18 @@ def html_table(*columns):
 
 
 def make_link(ref, alias, color=''):
-    link = (
-        '&nbsp;&nbsp; <a style="color:' + color + ';"' +
-        'href="' + ref + '">' +
-        alias + '</a>&nbsp;&nbsp;'
-    )
+    if color == 'red' :
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '"><b>' +
+            alias + '</b></a>&nbsp;&nbsp;'
+        )
+    else:
+        link = (
+            '&nbsp;&nbsp; <a style="color:' + color + ';"' +
+            'href="' + ref + '">' +
+            alias + '</a>&nbsp;&nbsp;'
+        )
     return link
 
 
@@ -468,13 +471,13 @@ def table_content(db, item_info,
         if entries < max_entries:
             dates.append((date, out_of_range_colour))
             sizes.append((ordered[date], out_of_range_colour))
-            ref = test_to_archive(item_info, date)  # glob in future
+            ref = test_to_archive(item_info, date) + '.gz' # glob in future
             alias = os.path.basename(ref)  # to change with glob.glob()
             links.append((make_link(ref, alias), out_of_range_colour))
             out_of_range_colour = ''
     dates = ('Date', dates)
-    sizes = ('Size', sizes)
-    links = ('Link', links)
+    sizes = ('Size/Evt [kB]', sizes)
+    links = ('Link to archived file', links)
     if redirect:
         return [dates, sizes, links]
     elif not redirect:
@@ -569,7 +572,7 @@ def badlist_category(category, contents):
 
     """
     html = '<div id="container">\n'
-    html += 'Category - ' + category + '</br>\n'
+    html += '<b>' + category + '</b></br>\n'
     html += '<p class="tab">\n'
     for item in contents:
         for i, word in enumerate(item):
@@ -601,8 +604,9 @@ def badlist_box(header, contents):
     )
     for i, word in enumerate(header):
         field, name = word
-        title = field.title() + ': ' + name
-        html += title + '; ' if i < len(header)-1 else title
+        #title = field.title() + ': ' + name
+        title = name
+        html += '<b>' + title + '</b>; ' if i < len(header)-1 else  title
     html += textwrap.dedent(
         '''
     </font>
@@ -625,31 +629,34 @@ def bad_list_page(contents):
     """
     html = textwrap.dedent(
         '''
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <!DOCTYPE html>
         <html>
           <head>
             <title>Main</title>
-            <link rel="stylesheet"type="text/css" href="css/def.css">
-            <style type="text/css">
-              body,table{font-family:sans-serif}
-              .tab{margin-left:40px;}
-            </style>
-          </head>
-          <body>
-          <div id="container";align="center">
-          <font size="6">          
-          ATLAS EDM Trigger Size Monitoring by Trigne
-          </font>
-          </p>
-          </div>
-          <p> 
-          </br>
-          The following is a list of the most recent EDM size tests that
-          fall outside the nominal range. Click on the links to go to a
-          summary of the results.
-          </p>
-          </div><!--container-->
-        <hr/>
+            <link rel="stylesheet" type="text/css" href="css/style.css">
+              <style type="text/css">
+                body {font-family: verdana}
+                table {font-family: arial}
+                .tab { margin-left: 40px; }
+              </style>
+            </head>
+            <body>
+              <div id="container">
+                <div align="center">
+                  <font size="6">
+                    ATLAS EDM Trigger Size Monitoring Homepage
+                  </font>
+                </p>
+              </div>
+              <p> 
+              </br>
+                <div align="center">
+                  <hr/>
+                  This page lists <b>only</b> the tests that fall outside the nominal range.<br/>
+                  Click on the links to monitor the test or use the menu on the left to navigate. 
+                </div>
+            </p>
+            <hr/>
         '''
     )
     for header in contents:
@@ -921,24 +928,35 @@ def make_sidemenu(menu_items,
 
     """
     html = HTML_DOCTYPE
-    title = 'Menu'
-    html += make_head(title, base_target='Right')
+    # title = 'Menu'
+    # html += make_head(title, base_target='Right')
     html += textwrap.dedent(
         '''
-        <body bgcolor="black">
-        <center>
-        <nav>
-        <ul>
-        <li><a target="main" href="main.html">Home</a></li>
-        </ul>
-        </nav>
-        <nav>
-        <ul>
+        <html lang="en">
+          <head>
+            <title>Menu</title>
+            <link rel="stylesheet" type="text/css" href="css/style.css"><base target="Right"/>
+
+              <style type="text/css">
+                body {font-family: sans-serif}
+                table {font-family: sans-serif}
+              </style>
+              <script type="text/javascript">
+              </script>
+            </head>
+
+            <body bgcolor="white">
+              <center>
+                <nav>
+                  <a class="button -dark center" target="main" href="main.html">Home</a>
+                </nav>
+                <nav>
+                  <ul>
     '''
     )
     for item in menu_items:
         ref, alias = item
-        html += '<li><a target="main" href="' + ref + '">'
+        html += '<li><a class="button -regular center"  target="main" href="' + ref + '">'
         html += '<br/>'.join([word for word in alias.split()])
         html += '</a></li>\n'
     html += textwrap.dedent(
@@ -1010,28 +1028,31 @@ def make_plot(db, item_info, from_home=False):
 
     """
     ordered = last_to_first(db, item_info)
-    Xdate = [key for key in ordered if ordered[key] > 0]
+    ordered = OrderedDict((key, ordered[key]) for key in reversed(ordered))
+    Xdate = [timestamp_to_datetime(key).date() for key in ordered if ordered[key] > 0] 
     Ysize = [float(ordered[key]) for key in ordered if ordered[key] > 0]
+
     if len(Ysize) > 0:
         item = get_item(db, item_info)
         plottitle = item_string(item_info, separator='/')
         imagesHome = os.path.join(WWW_HOME, IMAGES_FOLDER)
         plotfile = os.path.join(imagesHome,
                                 item_string(item_info) + '.png')
-        # xfmt = dates.DateFormatter('%Y %b %d')
+        xfmt = dates.DateFormatter('%d / %b / %y')
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        # ax.xaxis.set_major_formatter(xfmt)
+        ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+        ax.grid(which='major', color='k', linestyle='--', linewidth=0.3)        
 
-        plt.plot_date(Xdate, Ysize, 'bo-')
+        plt.plot_date(Xdate, Ysize,'bo-')
         plt.title(plottitle, fontsize=10)
         plt.xlim(Xdate[0], Xdate[-1])
         #plt.xlim(Xdate[0]-datetime.timedelta(days=1), Xdate[-1]+datetime.timedelta(days=1))
         plt.ylim(0, max(Ysize)*1.1)
-        plt.xticks(rotation='vertical')
+        plt.xticks(rotation=25)
         plt.xlabel('Date')
-        plt.ylabel('Size/Evt (kb)')
+        plt.ylabel('Size/Evt [kb]')
         plt.gcf().subplots_adjust(bottom=0.25)
 
         plt.savefig(plotfile)

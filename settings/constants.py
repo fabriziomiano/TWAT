@@ -5,15 +5,11 @@ import time as time_module
 # PROJECT_HOME = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring' 
 # ARCHIVE_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
 # SUMMARY_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/summary']
-# WEB_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
-# PLOTS_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/plots']
 INPUT_HOME = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART' ]
 PROJECT_HOME = '/afs/cern.ch/user/f/fmiano/TWAT'
 ARCHIVE_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/archive']
 SUMMARY_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/summary']
-WEB_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/webpage']
-PLOTS_HOME = ['/afs/cern.ch/user/f/fmiano/TWAT/plots']
-
+WEB_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage']
 
 MAILHOST = 'localhost'
 FROM = 'atrvshft@lxplus.cern.ch'

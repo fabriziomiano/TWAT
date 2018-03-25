@@ -62,26 +62,53 @@ def update_refs(info, path):
 
 print "\t Now Reading files(s) to create references"
 
-for pattern_fields in product(*SUMMARY_PATH_STRUCT):
+# IGNORED
+if (0):
+    for pattern_fields in product(*SUMMARY_PATH_STRUCT):
+        pattern = os.path.join(*pattern_fields)
+        for summary_file in glob.glob(pattern):
+            f = open(summary_file,'r')
+            size = -1
+            for line in f:
+                parts = line.strip().split()
+                year = int(parts[0])
+                month = int(parts[1])
+                day = int(parts[2])
+                branch = parts[3]
+                project = parts[4]
+                clock = parts[5]
+                platform = parts[6]
+                sample = parts[7]
+                size = float(parts[8])
+                category = os.path.basename(summary_file)[len('trigger'):-len('.txt')]
+
+                info = ([branch, project, platform, sample, category], size)
+                
+                update_refs(info, REFS_PATH)
+
+
+for pattern_fields in product(*ARCHIVE_PATH_STRUCT):
     pattern = os.path.join(*pattern_fields)
-    for summary_file in glob.glob(pattern):
-        f = open(summary_file,'r')
-        size = -1
+    for archive_file in glob.glob(pattern):
+        relevant_path = archive_file.split(ARCHIVE_HOME[0])
+        #print relevant_path
+        parts = relevant_path[1].split('/')
+        #print parts
+        year = int(parts[2])
+        month = int(parts[3])
+        day = int(parts[4])
+        branch = parts[5]
+        project = parts[6]
+        clock = parts[7]
+        platform = parts[8]
+        sample = parts[9]
+
+# right up until here
+               
+        f = gzip.open(archive_file,'rb') # here the plan is open the .txt (.gz) file read it and save info in the json on the fly
         for line in f:
-            parts = line.strip().split()
-            year = int(parts[0])
-            month = int(parts[1])
-            day = int(parts[2])
-            branch = parts[3]
-            project = parts[4]
-            clock = parts[5]
-            platform = parts[6]
-            sample = parts[7]
-            size = float(parts[8])
-            category = os.path.basename(summary_file)[len('trigger'):-len('.txt')]
 
-            info = ([branch, project, platform, sample, category], size)
+# to be continued... 
 
-            update_refs(info, REFS_PATH)
-
-print "\t References added to file ", REFS_PATH
+            
+#print "\t References added to file ", REFS_PATH
