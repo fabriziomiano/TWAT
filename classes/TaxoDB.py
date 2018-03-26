@@ -28,10 +28,11 @@ class TaxoDB(object):
         f.close()
 
     def add_item(self, item_info, value):
+        # TODO: adjust to accept all kind of values, not only dicts
         nested_fields = self.db
         info = dict(item_info)
         for template_field in self.template:
-            field = info.pop(template_field)
+            field = info.pop(template_field)  # check key not in dict
             if field not in nested_fields:
                 nested_fields[field] = {}
             nested_fields = nested_fields[field]
