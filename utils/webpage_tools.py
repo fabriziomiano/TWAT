@@ -1,4 +1,5 @@
 import os
+import glob
 import textwrap
 from collections import OrderedDict
 from classes.EDM import EDM 
@@ -189,9 +190,13 @@ def table_content(edm, item_info,
         if entries < max_entries:
             dates.append((date, out_of_range_colour))
             sizes.append((ordered[date], out_of_range_colour))
-            ref = edm.test_to_archive(item_info, date)  # glob in future
-            alias = os.path.basename(ref)  # to change with glob.glob()
-            links.append((make_link(ref, alias), out_of_range_colour))
+            ref_abs = edm.test_to_archive(item_info, date)
+            ref_relative = ref_abs[ref_abs.find('ART/'):]
+            for ref in glob.glob(os.path.join(ref_abs, '*')):
+                alias = os.path.basename(ref)  
+                ref = os.path.join(ref_relative, alias)
+                links.append((make_link('../../archive/' + ref, alias),
+                              out_of_range_colour))
             out_of_range_colour = ''
     dates = ('Date', dates)
     sizes = ('Size', sizes)
