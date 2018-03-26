@@ -8,7 +8,7 @@ from classes.EDM import EDM
 
 
 xlmns = 'xmlns="http://www.w3.org/1999/xhtml"'
-DB_PATH = 'edm_db.json'
+DB_PATH = 'archive_db.json'
 TEMPLATE_FIELDS = [
     'branch', 'project', 'platform', 'sample', 'category'
 ]
