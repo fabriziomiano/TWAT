@@ -28,6 +28,13 @@ class TaxoDB(object):
         f.close()
 
     def add_item(self, item_info, value):
+        """
+        Args:
+        item_info <dict> -- keys: self.template elements
+        values: identifier of the item keys
+        value <dict> -- a dict containing values for the given item_info
+
+        """
         # TODO: adjust to accept all kind of values, not only dicts
         nested_fields = self.db
         info = dict(item_info)
