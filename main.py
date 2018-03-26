@@ -53,6 +53,7 @@ DB_PATH = 'archive_db.json'
 
 
 edm = EDM(DB_PATH, TEMPLATE_FIELDS)
+
 for pattern_fields in product(*INPUT_PATH_STRUCT):
     pattern = os.path.join(*pattern_fields)
     for file_toarchive in glob.glob(pattern):
@@ -62,7 +63,7 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
         input_info = extract_path_info(file_toarchive, INPUT_HOME[0])
 
         archive_path = set_archive_path(input_info)
-        summary_path = set_summary_path(input_info)
+        #summary_path = set_summary_path(input_info)
 
         create_nonexistent_archive(archive_path)
         destination_file = os.path.join(archive_path, input_file + '.gz')
@@ -74,15 +75,18 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
             
         trigger_categories, total_size = get_trigsize(destination_file)
         timestamp = input_info.pop("datetime")
+        prefix = 'trigger'
         for trigger_category in trigger_categories:
             category = trigger_category[0]
+            if category.startswith(prefix):
+                category = category[len(prefix):]
             new_item = copy.deepcopy(input_info)
             new_item.update({'category': category})
             value = {datetime_to_timestamp(timestamp): trigger_category[1]}
             edm.add_test(new_item, value)
             
-        write_triginfo_to_file(input_info, summary_path,
-                               trigger_categories, total_size)
+        # write_triginfo_to_file(input_info, summary_path,
+        #                    trigger_categories, total_size)
 
             
 if len(dirs) > 0:
