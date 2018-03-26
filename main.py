@@ -17,6 +17,7 @@ from settings.constants import *
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
 from utils.misc import utils_log
 import copy
+from classes.EDM import EDM
 
 splash_screen(TODAY, WEEKDAY)
 
@@ -69,7 +70,7 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
             copy_and_compress(file_toarchive, archive_path)
             dirs+=[file_toarchive]
 
-        create_nonexistent_archive(summary_path)
+        # create_nonexistent_archive(summary_path)
             
         trigger_categories, total_size = get_trigsize(destination_file)
         timestamp = input_info.pop("datetime")
