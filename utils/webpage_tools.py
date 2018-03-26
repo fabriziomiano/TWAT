@@ -362,8 +362,12 @@ def bad_list_page(contents):
           </br>
             <div align="center">
               <hr/>
-              This page lists <b>only</b> the tests that fall outside the nominal range.<br/>
-              Click on the links to monitor the test or use the menu on the left to navigate. 
+              This page lists <b>only</b> the tests that fall outside the 
+              nominal range.<br/>
+              Click on the links to monitor the test or use the menu 
+              on the left to navigate. <br/>
+              If this page is empty all the Trigger EDM sizes are within 
+              the accepted range. 
             </div>
         </p>
         <hr/>
