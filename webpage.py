@@ -20,14 +20,12 @@ create_nonexistent_archive(os.path.join(WWW_HOME, RESULTS_FOLDER))
 create_nonexistent_archive(os.path.join(WWW_HOME, SAMPLE_FOLDER))
 create_nonexistent_archive(os.path.join(WWW_HOME, IMAGES_FOLDER))
 
-
-# db = db_loader(DB_PATH)
-edm = EDM(DB_PATH,TEMPLATE_FIELDS)
+edm = EDM(DB_PATH, TEMPLATE_FIELDS)
 
 # plots
 for i, item_info in enumerate(edm.item_infos()):
     make_plot(edm, item_info)
-
+    
 # main.html
 header_fields = ('branch', 'project', 'platform')
 contents = bad_page_contents(edm, header_fields)
@@ -47,7 +45,7 @@ for product in edm.field_products(overview_fields):
     html = overview(edm, overview_tuple)
     path = overview_path(product)
     write_html(path, html)
-    
+
     level = dict(zip(overview_fields, product))
     for selected_sample in edm.get_level(level):
         html = sample_page(edm, level, selected_sample)
