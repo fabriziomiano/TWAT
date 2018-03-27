@@ -161,6 +161,29 @@ def copy_and_compress(filein_path, destination_path, exc_raise=False):
         f_in.close()
 
 
+def copy_file(filein_path, destination_path, exc_raise=False):
+    """ 
+    Copy given input file 
+    to a given destination destination directory  
+    Raise an error if not possible
+
+    """
+    try:
+        filein = os.path.basename(filein_path)
+        fileout = filein
+        fileout_path = os.path.join(destination_path, fileout)
+        shutil.copy(filein_path, fileout_path)
+        os.system('chmod 644 ' + fileout_path)
+        utils_log.info("File\t%s\t archived at: %s\n",
+                       filein, fileout_path)
+    except IOError as e:
+        delete_empty_archive(destination_path)
+        utils_log.exception("Failed to copy file from %s\n",
+                            filein_path)
+        if exc_raise:
+            raise
+
+
 def get_trigsize(input_file, exc_raise=False):
     """
     For a given txt file it returns a tuple 
@@ -180,13 +203,15 @@ def get_trigsize(input_file, exc_raise=False):
     try:
         trigger_categories = []
         total_size = 0
-        f = gzip.open(input_file, "rb")
+        f = open(input_file, "rb")
         for line in f:
-            if line.count('from checkFile'):
-                total_size = (line.split()[-1]).strip()
             if line.startswith('trigger'):
                 trigger_categories += [(line.strip()).split()]
-        return (trigger_categories, total_size)
+            if line.startswith('Total Trigger Size'):
+                total_size = (line.split()[-1]).strip()
+            if line.startswith('Total file size'):
+                total_aod_size = (line.split()[-1]).strip()
+        return (trigger_categories, total_size, total_aod_size)
     except IOError as e:
         utils_log.exception("Could not read file: %s\n", input_file)
         if exc_raise:
