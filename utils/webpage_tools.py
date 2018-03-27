@@ -141,13 +141,13 @@ def make_link(ref, alias, color=''):
         link = (
             '&nbsp;&nbsp; <a style="color:' + color + ';"' +
             'href="' + ref + '">' +
-            '<b>' + alias + '</b></a>&nbsp;&nbsp;'
+            '<b>' + alias + '</b></a>&nbsp;&nbsp;\n'
         )
     else:
         link = (
             '&nbsp;&nbsp; <a style="color:' + color + ';"' +
             'href="' + ref + '">' +
-            alias + '</a>&nbsp;&nbsp;'
+            alias + '</a>&nbsp;&nbsp;\n'
         )
     return link
 
@@ -363,7 +363,7 @@ def bad_list_page(contents):
           <p> 
           </br>
             <div align="center">
-              <hr/>
+              <hr>
               This page lists <b>only</b> the tests that fall outside the 
               nominal range.<br/>
               Click on the links to monitor the test or use the menu 
@@ -372,7 +372,7 @@ def bad_list_page(contents):
               the accepted range. 
             </div>
         </p>
-        <hr/>
+        <hr>
     '''
                            )
     for header in contents:
@@ -387,7 +387,7 @@ def bad_list_page(contents):
     return html
 
 
-def plot_link(edm, item_info, plot_width='400', levels_from_page=0,
+def plot_link(edm, item_info, plot_width='500', levels_from_page=0,
               from_home=False):
     """
     Return html text of link to the plot corresponding to given 
@@ -516,8 +516,8 @@ def make_category_links(edm, super_level):
     <br><div align="center">
     Click on the category to jump to its section:
     in red the category whose test fall outside the nominal range 
-    </div>
-    <br>
+    <hr>
+    
     '''
                            )
     super_category = edm.get_level(super_level)
@@ -529,6 +529,7 @@ def make_category_links(edm, super_level):
         ref = '#' + category
         alias = category
         html += make_link(ref, alias, color=link_color)
+    html += '<hr>\n'
     html += '</div><!-- container -->\n'
     return html
 
