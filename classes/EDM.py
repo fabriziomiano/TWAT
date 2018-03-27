@@ -28,7 +28,7 @@ class EDM(TaxoDB):
         else:
             print("the key of given test dict is not \
             a valid timestamp. Check documentation for more infos")
-            
+
     def get_runs(self, item_info):
         item = copy.deepcopy(self.get_item(item_info))
         reference = item.pop(REFERENCE_KEY, None)
@@ -52,25 +52,25 @@ class EDM(TaxoDB):
         runs = self.get_runs(item_info)
         last_update = max(runs.keys())
         return {last_update: runs[last_update]}
-    
+
     def most_recent_nonzero(self, item_info):
         ordered_runs = self.last_to_first(item_info)
         for date in ordered_runs:
             size = ordered_runs[date]
             if size > 0:
-                #return size
                 return {date: size}
 
     def is_goodtest(self, item_info, size):
         item = self.get_item(item_info)
         nominal = item.get(REFERENCE_KEY)
         if size > 0 and (nominal is not None):
-            tolerance = nominal*RANGE_ACCEPTED
-            min, max = nominal - tolerance, nominal + tolerance
+            tolerance = float(nominal) * RANGE_ACCEPTED
+            min, max = float(nominal) - tolerance, \
+                float(nominal) + tolerance
             if (size > max) or (size < min):
                 return False
         return True
-    
+
     def date_in_keys(self, item_info):
         """ Return first encountered date found in item keys """
         item = self.get_item(item_info)
@@ -83,7 +83,7 @@ class EDM(TaxoDB):
         """
         Return True if most recent non zero size for a given item info
         is out of range, i.e. is not a good test
-        
+
         """
         item = self.get_item(item_info)
         size_to_check = self.most_recent_nonzero(item_info).values()[0]
@@ -97,33 +97,13 @@ class EDM(TaxoDB):
         test["datetime"] = item_datetime
         return set_archive_path(test)
 
-    # def bad_list(self):
-    #     """
-    #     Return a list of all items with most recent test out of range
-        
-    #     Single list element is a item_info dictionary 
-    #     of the corresponding out-of-range tes plus its {date: size}
-        
-    #     """
-    #     bad_list = []
-    #     for item in self.item_infovalues():
-    #         tests = item[VALUES]
-    #         last_test = self.most_recent(tests)
-    #         last_size = next(iter(last_test.values()))
-    #         item_info = item.copy()
-    #         item_info.pop('tests')
-    #         if not is_goodtest(db, item_info, last_size):
-    #             item_info.update(last_test)
-    #             bad_list.append(item_info)
-    #     return bad_list
-
     def bad_list(self):
         """
         Return a list of all items with most recent test out of range
-        
+
         Single list element is a item_info dictionary 
         of the corresponding out-of-range tes plus its {date: size}
-        
+
         """
         bad_list = []
         for item_info in self.item_infos():
@@ -132,9 +112,8 @@ class EDM(TaxoDB):
                 item_info.update(last_test)
                 bad_list.append(item_info)
         return bad_list
-    
+
     def item_string(self, level, separator='_'):
         depth = len(level)
         fields = list(self.template[:depth])
         return separator.join([str(level[field]) for field in fields])
-
