@@ -64,9 +64,11 @@ class EDM(TaxoDB):
         item = self.get_item(item_info)
         nominal = item.get(REFERENCE_KEY)
         if size > 0 and (nominal is not None):
-            tolerance = float(nominal) * RANGE_ACCEPTED
-            min, max = float(nominal) - tolerance, \
-                float(nominal) + tolerance
+            size = float(size)
+            nominal = float(nominal)
+            tolerance = nominal * RANGE_ACCEPTED
+            min, max = nominal - tolerance, \
+                nominal + tolerance
             if (size > max) or (size < min):
                 return False
         return True
