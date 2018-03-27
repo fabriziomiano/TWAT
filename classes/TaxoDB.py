@@ -186,16 +186,15 @@ class TaxoDB(object):
                 updatable[k] = v
         return updatable
 
-
     def info_tupler(self, item_info):
         """
         From item_info dict return a tuple of all field names in 
         their depth order (i.e. following self.template)
-        
+
         Note that this works also if item_info is not complete, i.e.
         is a level dict (see get_level() for infos), but tuple
         will be shorter than TEMPLATE_FIELDS
-        
+
         """
         infos = tuple(item_info[field] for field in self.template
                       if item_info.get(field) is not None)
