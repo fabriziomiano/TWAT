@@ -1,7 +1,7 @@
 """
 Read ART result archive from input_home and:
  - create new archive like
-input_home/ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid/AOD.pool.root.checkFiletrigSize.txt.gz
+input_home/ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid/AOD.pool.root.checkFiletrigSize.txt
 
  - 
 
@@ -13,10 +13,12 @@ import time as time_module
 import os
 import glob
 import datetime
-import gzip
 from itertools import product
-from utils.misc import *
-from settings.constants import *
+from utils.misc import get_logger, set_consecutive, create_nonexistent_archive, \
+    set_archive_path, extract_path_info, copy_file, get_trigsize, \
+    datetime_to_timestamp, splash_screen
+from settings.constants import TODAY, WEEKDAY, LOG_DIRECTORY, LOG_FILE_NAME, \
+    MAILHOST, FROM, TO, SUBJECT, INPUT_PATH_STRUCT, INPUT_HOME
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
 from utils.misc import utils_log
 import copy
@@ -68,12 +70,14 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
         archive_path = set_archive_path(input_info)
 
         create_nonexistent_archive(archive_path)
-        destination_file = os.path.join(archive_path, input_file + '.gz')
+        destination_file = os.path.join(archive_path, input_file)
         if not os.path.exists(destination_file):
-            copy_and_compress(file_toarchive, archive_path)
+            # copy_and_compress(file_toarchive, archive_path)
+            copy_file(file_toarchive, archive_path)
             dirs += [file_toarchive]
 
-        trigger_categories, total_size = get_trigsize(destination_file)
+        trigger_categories, total_size, total_aod_size = get_trigsize(
+            destination_file)
         timestamp = input_info.pop("datetime")
         prefix = 'trigger'
         for trigger_category in trigger_categories:
@@ -85,10 +89,17 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
             value = {datetime_to_timestamp(timestamp): trigger_category[1]}
             edm.add_test(new_item, value)
 
+        new_item.update({'category': 'Total'})
+        value = {datetime_to_timestamp(timestamp): total_size}
+        edm.add_test(new_item, value)
+        new_item.update({'category': 'TotalAOD'})
+        value = {datetime_to_timestamp(timestamp): total_aod_size}
+        edm.add_test(new_item, value)
+
+edm.save()
+
 if len(dirs) > 0:
     logger.info('%s files successfully archived. Done \n',
                 len(dirs))
 else:
     logger.info('\t No new files were added to the archive\n')
-
-edm.save()
