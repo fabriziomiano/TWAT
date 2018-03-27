@@ -3,8 +3,10 @@ import datetime
 import time as time_module
 
 INPUT_HOME = ['/eos/atlas/atlascerngroupdisk/trig-daq/ART']
-PROJECT_HOME = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring'
-ARCHIVE_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
+# PROJECT_HOME = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring'
+PROJECT_HOME = '/afs/cern.ch/user/f/fmiano/fabriziomiano/TWAT'
+# ARCHIVE_HOME = ['/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/archive']
+ARCHIVE_HOME = ['/afs/cern.ch/user/f/fmiano/fabriziomiano/TWAT/archive']
 WWW_HOME = '/eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/webpage'
 
 MAILHOST = 'localhost'
@@ -44,7 +46,7 @@ INPUT_FILES = TRIGINFO_FILE + ADDITIONAL_FILES
 INPUT_PATH_STRUCT = (INPUT_HOME, BRANCHES, PROJECTS, PLATFORMS,
                      TIMESTAMPS, TEST, SAMPLES, INPUT_FILES)
 
-ARCHIVED_FILES = [input_file + '.gz' for input_file in INPUT_FILES]
+ARCHIVED_FILES = [input_file for input_file in INPUT_FILES]
 ARCHIVE_PATH_STRUCT = (ARCHIVE_HOME, ART, YEARS, MONTHS, DAYS,
                        BRANCHES, PROJECTS, CLOCK, PLATFORMS,
                        SAMPLES, ARCHIVED_FILES)
