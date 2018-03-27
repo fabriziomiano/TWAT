@@ -1,114 +1,32 @@
+from classes.EDM import EDM
 """
-Create, if doesn't exist, or update a json file
-containing the references information for the EDM 
+This example shows how to update a json file in such that 
+it will contain the desired reference info for the EDM.
+ 
+In particular, in this example the branch 21.0, together with 
+the project Athena, built on the 2018-03-21T2154, was chosen 
+to be the desired reference. 
 
 """
-import os, glob, datetime, gzip
-import json
-from itertools import product
-from collections import defaultdict
-from settings.constants import *
 
-nested_dict = lambda: defaultdict(nested_dict)
+DB_PATH = 'archive_db.json'
+TEMPLATE_FIELDS = [
+    'branch', 'project', 'platform', 'sample', 'category'
+]
 
+edm = EDM(DB_PATH, TEMPLATE_FIELDS)
 
-def fill_updatable(edm, updatable_edm):
-    for k, v in edm.iteritems():
-        if isinstance(v, dict):
-            updatable_edm[k] = defaultdict(dict, v)
-            fill_updatable(v, updatable_edm[k])
-        else:
-            updatable_edm[k] = v
-    return updatable_edm
+desired_fields = {'branch': '21.0', 'project': 'Athena'}
+desired_date = '2018-03-21T2154'
 
+mylevel = edm.get_level(desired_fields)
+mygroup = TEMPLATE_FIELDS[len(desired_fields):]
+for item in edm.item_infovalues(level=mylevel, group_names=mygroup):
+    values = item.pop('values')
+    item.update(desired_fields)
+    ref = edm.most_recent(item)
+    ref_size = values.get(desired_date)
+    if ref_size is not None:
+        edm.add_ref(item, ref_size)
 
-def edm_loader(path):    
-    if os.path.isfile(path):
-        f = open(path, 'r')
-        edm = json.load(f)
-        updatable_edm = nested_dict()
-        edm = fill_updatable(edm, updatable_edm)
-    else:
-        edm = nested_dict()
-    return edm
-
-
-def edm_inserter(edm, path):
-    f = open(path, 'w')
-    loader = json.dump(edm, f, indent=4, separators=(',', ': '))
-    f.close()
-
-
-def add_ref(info, edm):
-    fields, value = info
-    
-    nested_fields = edm
-    for field in fields:
-        if field not in nested_fields:
-            nested_fields[field] = {}
-        else:
-            pass
-        nested_fields = nested_fields[field]
-    nested_fields['nominal'] = value
-    nested_fields['range'] = value * RANGE_ACCEPTED
-    return edm
-
-
-def update_refs(info, path):
-    edm = edm_loader(path)
-    updated_edm = add_ref(info, edm)
-    edm_inserter(updated_edm, path)
-
-
-print "\t Now Reading files(s) to create references"
-
-# IGNORED
-if (0):
-    for pattern_fields in product(*SUMMARY_PATH_STRUCT):
-        pattern = os.path.join(*pattern_fields)
-        for summary_file in glob.glob(pattern):
-            f = open(summary_file,'r')
-            size = -1
-            for line in f:
-                parts = line.strip().split()
-                year = int(parts[0])
-                month = int(parts[1])
-                day = int(parts[2])
-                branch = parts[3]
-                project = parts[4]
-                clock = parts[5]
-                platform = parts[6]
-                sample = parts[7]
-                size = float(parts[8])
-                category = os.path.basename(summary_file)[len('trigger'):-len('.txt')]
-
-                info = ([branch, project, platform, sample, category], size)
-                
-                update_refs(info, REFS_PATH)
-
-
-for pattern_fields in product(*ARCHIVE_PATH_STRUCT):
-    pattern = os.path.join(*pattern_fields)
-    for archive_file in glob.glob(pattern):
-        relevant_path = archive_file.split(ARCHIVE_HOME[0])
-        #print relevant_path
-        parts = relevant_path[1].split('/')
-        #print parts
-        year = int(parts[2])
-        month = int(parts[3])
-        day = int(parts[4])
-        branch = parts[5]
-        project = parts[6]
-        clock = parts[7]
-        platform = parts[8]
-        sample = parts[9]
-
-# right up until here
-               
-        f = gzip.open(archive_file,'rb') # here the plan is open the .txt (.gz) file read it and save info in the json on the fly
-        for line in f:
-
-# to be continued... 
-
-            
-#print "\t References added to file ", REFS_PATH
+edm.save()
