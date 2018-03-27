@@ -57,40 +57,24 @@ def is_date(string):
         return False
 
 
-def set_summary_path(input_info):
-    """
-    Return summary-path-like string from 
-    a dictionary containing all the relevant
-    info read from input_home
-
-    """      
-    summary_path = os.path.join(SUMMARY_HOME[0], 'ART', \
-                                str(input_info["branch"]), \
-                                str(input_info["project"]), \
-                                str(input_info["platform"]), \
-                                str(input_info["sample"])
-    )
-    return summary_path
-
-
 def set_archive_path(input_info):
     """
     Return archive-path-like string from 
     a dictionary containing all the relevant
     info read from input_home
 
-    """      
-    archive_path = os.path.join(ARCHIVE_HOME[0], 'ART', \
-                                str(input_info["datetime"].year), \
-                                str(input_info["datetime"].month), \
-                                str(input_info["datetime"].day), \
-                                str(input_info["branch"]), \
-                                str(input_info["project"]), \
-                                str(input_info["datetime"].hour) + 'H' + \
-                                str(input_info["datetime"].minute) + 'M', \
-                                str(input_info["platform"]), \
+    """
+    archive_path = os.path.join(ARCHIVE_HOME[0], 'ART',
+                                str(input_info["datetime"].year),
+                                str(input_info["datetime"].month),
+                                str(input_info["datetime"].day),
+                                str(input_info["branch"]),
+                                str(input_info["project"]),
+                                str(input_info["datetime"].hour) + 'H' +
+                                str(input_info["datetime"].minute) + 'M',
+                                str(input_info["platform"]),
                                 str(input_info["sample"])
-    )
+                                )
     return archive_path
 
 
@@ -125,7 +109,8 @@ def create_nonexistent_archive(path, exc_raise=False):
         if e.errno != errno.EEXIST:
             utils_log.exception(
                 "Could not create directory with path: %s\n", path)
-            if exc_raise: raise
+            if exc_raise:
+                raise
         return None
 
 
@@ -142,7 +127,8 @@ def delete_empty_archive(path, exc_raise=False):
     except OSError as e:
         if e.errno != errno.ENOTEMPTY:
             utils_log.exception("Could not remove path: %s\n", path)
-            if exc_raise: raise
+            if exc_raise:
+                raise
         utils_log.warn(
             "Directory %s is not empty and was not removed\n", path)
 
@@ -168,7 +154,8 @@ def copy_and_compress(filein_path, destination_path, exc_raise=False):
         delete_empty_archive(destination_path)
         utils_log.exception("Failed to copy file from %s\n",
                             filein_path)
-        if exc_raise: raise
+        if exc_raise:
+            raise
     finally:
         f_out.close()
         f_in.close()
@@ -188,7 +175,7 @@ def get_trigsize(input_file, exc_raise=False):
     trigger_categories <list(list())> -- a list whose elements are lists
     such as ['TriggerBjet', '2.2']
     total_size <string> -- the sum of all the trigger category sizes
-    
+
     """
     try:
         trigger_categories = []
@@ -202,7 +189,8 @@ def get_trigsize(input_file, exc_raise=False):
         return (trigger_categories, total_size)
     except IOError as e:
         utils_log.exception("Could not read file: %s\n", input_file)
-        if exc_raise: raise
+        if exc_raise:
+            raise
     finally:
         f.close()
 
@@ -221,11 +209,10 @@ def write_triginfo_to_file(input_info, summary_path, trigger_categories, total_s
     branch = str(input_info["branch"])
     project = str(input_info["project"])
     clock = str(input_info["datetime"].hour) + 'H' +\
-            str(input_info["datetime"].minute) + 'M'
+        str(input_info["datetime"].minute) + 'M'
     platform = str(input_info["platform"])
     sample = str(input_info["sample"])
 
-    
     for trigger in trigger_categories:
         fileout_path = os.path.join(summary_path, trigger[0]+".txt")
         info_line = "%s %s %s %s %s %s %s %s %s" %\
@@ -294,8 +281,6 @@ def set_consecutive(file_path):
     return new_path
 
 
-
-
 ##############################################################
 
 def splash_screen(today, weekday):
@@ -305,16 +290,15 @@ def splash_screen(today, weekday):
     print
     print "\t ----  Trigger-size Web-display for ART Tests ---- "
     print
-    print "\t Author : Fabrizio Miano" 
-    print "\t Special Thanks to Trigne for his support" 
+    print "\t Author : Fabrizio Miano"
+    print "\t Special Thanks to Giosue Ruscica for his support"
     print
     print "\t Run Date : %s" % today.strftime("%A %b %d %Y %H:%M")
     print
     print
     print "\t ART home directory      : %s" % INPUT_HOME
     print "\t Archive home directory  : %s" % ARCHIVE_HOME
-    print "\t Summary home directory  : %s" % SUMMARY_HOME
-    print "\t Webpage home directory  : %s" % WEB_HOME
+    print "\t Webpage home directory  : %s" % WWW_HOME
     print
     print "\t-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
     print
