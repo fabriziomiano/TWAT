@@ -466,6 +466,7 @@ def make_head(title, html_type='',
     html += '<link rel="stylesheet" type="text/css" href="' + \
         style_path + '">'
     html += '<base target="' + base_target + '">\n'
+    html += '<meta http-equiv="pragma" content="no-cache" />\n'
     html += textwrap.dedent(
         '''
     <style type="text/css">
