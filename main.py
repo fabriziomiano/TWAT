@@ -3,14 +3,17 @@ Read ART result archive from input_home and:
  - create new archive like
 input_home/ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid/AOD.pool.root.checkFiletrigSize.txt.gz
 
- - create new summary writing out summary files for dedicated trigger categories like
-summary_home/ART/21.0/Athena/x86_64-slc6-gcc62-opt/test_mc_pp_v7_rdotoaod_grid/triggerMET.txt
+ - 
 
 """
 
-import logging, logging.handlers
+import logging
+import logging.handlers
 import time as time_module
-import os, glob, datetime, gzip
+import os
+import glob
+import datetime
+import gzip
 from itertools import product
 from utils.misc import *
 from settings.constants import *
@@ -59,20 +62,17 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
     for file_toarchive in glob.glob(pattern):
         logger.info('Getting info from ART path = %s \n',
                     file_toarchive)
-        input_file = os.path.basename(file_toarchive)        
+        input_file = os.path.basename(file_toarchive)
         input_info = extract_path_info(file_toarchive, INPUT_HOME[0])
 
         archive_path = set_archive_path(input_info)
-        #summary_path = set_summary_path(input_info)
 
         create_nonexistent_archive(archive_path)
         destination_file = os.path.join(archive_path, input_file + '.gz')
         if not os.path.exists(destination_file):
             copy_and_compress(file_toarchive, archive_path)
-            dirs+=[file_toarchive]
+            dirs += [file_toarchive]
 
-        # create_nonexistent_archive(summary_path)
-            
         trigger_categories, total_size = get_trigsize(destination_file)
         timestamp = input_info.pop("datetime")
         prefix = 'trigger'
@@ -84,13 +84,11 @@ for pattern_fields in product(*INPUT_PATH_STRUCT):
             new_item.update({'category': category})
             value = {datetime_to_timestamp(timestamp): trigger_category[1]}
             edm.add_test(new_item, value)
-            
-        # write_triginfo_to_file(input_info, summary_path,
-        #                    trigger_categories, total_size)
 
-            
 if len(dirs) > 0:
     logger.info('%s files successfully archived. Done \n',
                 len(dirs))
 else:
     logger.info('\t No new files were added to the archive\n')
+
+edm.save()
