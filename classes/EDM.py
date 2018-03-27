@@ -1,4 +1,4 @@
-from utils.misc import timestamp_to_datetime, set_archive_path
+from utils.misc import timestamp_to_datetime, set_archive_path, is_date
 from dateutil.parser import parse
 from collections import OrderedDict
 from classes.TaxoDB import TaxoDB
