@@ -2,7 +2,7 @@ import os
 import glob
 import textwrap
 from collections import OrderedDict
-from classes.EDM import EDM 
+from classes.EDM import EDM
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -21,8 +21,8 @@ TEMPLATE_FIELDS = [
 ]
 DATE_FMT = "%Y-%m-%dT%H%M"
 HTML_DOCTYPE = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 ' +\
-     'Transitional//EN" ' + \
-     '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
+    'Transitional//EN" ' + \
+    '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n'
 
 
 def date_in_keys(item):
@@ -90,11 +90,12 @@ def sample_link(edm, item_info, levels_from_page=0):
     info_copy = item_info.copy()
     category = info_copy.pop('category')
     sample_string = '_'.join([info_copy[field]
-    for field in edm.template if info_copy.get(field) is not None])
+                              for field in edm.template if info_copy.get(field) is not None])
     ref = relative + 'sample_html/sample_' + \
-        sample_string + '.html' + '#' + category 
+        sample_string + '.html' + '#' + category
     alias = info_copy['sample']
-    return make_link(ref, alias)        
+    return make_link(ref, alias)
+
 
 def html_table(*columns):
     """
@@ -117,7 +118,7 @@ def html_table(*columns):
     html = textwrap.dedent('''
         <table border="3">
     '''
-    )
+                           )
     html += '  <tr>\n'
     for header in headers:
         html += '    <th>' + header + '</th>\n'
@@ -193,7 +194,7 @@ def table_content(edm, item_info,
             ref_abs = edm.test_to_archive(item_info, date)
             ref_relative = ref_abs[ref_abs.find('ART/'):]
             for ref in glob.glob(os.path.join(ref_abs, '*')):
-                alias = os.path.basename(ref)  
+                alias = os.path.basename(ref)
                 ref = os.path.join(ref_relative, alias)
                 links.append((make_link('../../archive/' + ref, alias),
                               out_of_range_colour))
@@ -231,6 +232,7 @@ def result_page(edm, item_info):
     html += '</body>\n'
     html += '</html>\n'
     return html
+
 
 def overview(edm, overview_tuple):
     level = dict((field[0], field[1]) for field in overview_tuple)
@@ -372,7 +374,7 @@ def bad_list_page(contents):
         </p>
         <hr/>
     '''
-    )
+                           )
     for header in contents:
         html += badlist_box(header, contents[header])
 
@@ -517,7 +519,7 @@ def make_category_links(edm, super_level):
     </div>
     <br>
     '''
-    )
+                           )
     super_category = edm.get_level(super_level)
     for category in super_category:
         category_key = edm.depth_field(super_level)
@@ -577,6 +579,7 @@ def sample_page(edm, level, selected_menu):
         html += category_box(edm, item_info)
     return html
 
+
 def make_sidemenu(menu_items,
                   html_type='xmlns="http://www.w3.org/1999/xhtml"'):
     """
@@ -589,7 +592,7 @@ def make_sidemenu(menu_items,
 
     """
     html = HTML_DOCTYPE
-    html += textwrap.dedent( '''
+    html += textwrap.dedent('''
     <html lang="en">
       <head>
         <title>Menu</title>
@@ -611,7 +614,7 @@ def make_sidemenu(menu_items,
             <nav>
               <ul>
     '''
-    )
+                            )
     for item in menu_items:
         ref, alias = item
         html += '<li><a class="button -regular center" target="main" href="' + ref + '">'
@@ -654,6 +657,7 @@ def result_page(edm, item_info):
     html += '</html>\n'
     return html
 
+
 def overview(edm, overview_tuple):
     level = dict((field[0], field[1]) for field in overview_tuple)
     title = '_'.join([level[key] for key in edm.template
@@ -687,8 +691,9 @@ def make_plot(edm, item_info, from_home=False):
     """
     ordered = edm.first_to_last(item_info)
     # Xdate = [key for key in ordered if ordered[key] > 0]
-    Xdate = [timestamp_to_datetime(key).date() for key in ordered if ordered[key] > 0]
-    Ysize = [float(ordered[key]) for key in ordered if ordered[key]>0]
+    Xdate = [timestamp_to_datetime(key).date()
+             for key in ordered if ordered[key] > 0]
+    Ysize = [float(ordered[key]) for key in ordered if ordered[key] > 0]
     if len(Ysize) > 0:
         item = edm.get_item(item_info)
         plottitle = edm.item_string(item_info, separator='/')
@@ -700,7 +705,7 @@ def make_plot(edm, item_info, from_home=False):
         ax = fig.add_subplot(111)
         ax.xaxis.set_major_formatter(xfmt)
         ax.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
-        ax.grid(which='major', color='k', linestyle='--', linewidth=0.3)        
+        ax.grid(which='major', color='k', linestyle='--', linewidth=0.3)
 
         plt.plot_date(Xdate, Ysize, 'bo-')
         plt.title(plottitle, fontsize=10)
