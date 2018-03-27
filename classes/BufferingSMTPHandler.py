@@ -1,4 +1,6 @@
-import string, logging, logging.handlers
+import string
+import logging
+import logging.handlers
 
 
 class BufferingSMTPHandler(logging.handlers.BufferingHandler):
@@ -7,6 +9,7 @@ class BufferingSMTPHandler(logging.handlers.BufferingHandler):
 
 
     """
+
     def __init__(self, mailhost, fromaddr, toaddrs, subject, capacity):
         logging.handlers.BufferingHandler.__init__(self, capacity)
         self.mailhost = mailhost
