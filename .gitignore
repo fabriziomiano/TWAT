@@ -1,6 +1,11 @@
 # output dir
 archive/
 summary/
+logs/
+webpage/results_html/
+webpage/overview_html/
+webpage/sample_html/
+
 
 # Byte-compiled files
 *.pyc
