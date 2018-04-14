@@ -7,6 +7,7 @@ input_home/ART/2018/2/1/21.0/Athena/21H53M/x86_64-slc6-gcc62-opt/test_mc_pp_v7_r
 
 """
 
+import copy
 import logging
 import logging.handlers
 import time as time_module
@@ -14,16 +15,14 @@ import os
 import glob
 import datetime
 from itertools import product
-from utils.misc import get_logger, set_consecutive, create_nonexistent_archive, \
+from classes.BufferingSMTPHandler import BufferingSMTPHandler
+from classes.EDM import EDM
+from utils.misc import get_logger, utils_log, set_consecutive, create_nonexistent_archive, \
     set_archive_path, extract_path_info, copy_file, get_trigsize, \
     datetime_to_timestamp, splash_screen
 from settings.constants import TODAY, WEEKDAY, LOG_DIRECTORY, LOG_FILE_NAME, \
-    MAILHOST, FROM, TO, SUBJECT, INPUT_PATH_STRUCT, INPUT_HOME
-from classes.BufferingSMTPHandler import BufferingSMTPHandler
-from utils.misc import utils_log
-import copy
-from classes.EDM import EDM
-
+    INPUT_PATH_STRUCT, INPUT_HOME
+from settings.config import MAILHOST, FROM, TO, SUBJECT
 splash_screen(TODAY, WEEKDAY)
 
 dirs = []
