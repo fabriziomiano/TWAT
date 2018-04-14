@@ -1,21 +1,38 @@
+import logging
+import logging.handlers
 import os
 import glob
 import textwrap
 from collections import OrderedDict
 from classes.EDM import EDM
+from classes.BufferingSMTPHandler import BufferingSMTPHandler
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import dates
 from matplotlib.ticker import FormatStrFormatter
-from utils.misc import timestamp_to_datetime, set_archive_path, is_date, nested_dict
+from utils.misc import get_logger, timestamp_to_datetime, set_archive_path, is_date, nested_dict
+from settings.constants import TODAY, WEEKDAY, LOG_DIRECTORY, LOG_FILE_NAME, \
+    INPUT_PATH_STRUCT, INPUT_HOME
+from settings.config import MAILHOST, FROM, TO, SUBJECT, RANGE_ACCEPTED
+
+# Create logger
+email_logger = get_logger(__name__)
+email_logger.setLevel(logging.INFO)
+# Add email handler
+SUBJECT = "EDM monitoring daily news" 
+email_news = BufferingSMTPHandler(MAILHOST, FROM, TO, SUBJECT, 100)
+email_news.setLevel(logging.INFO)
+formatter = logging.Formatter('%(message)s')
+email_news.setFormatter(formatter)
+email_logger.addHandler(email_news)
+
 
 WWW_HOME = 'webpage'
 IMAGES_FOLDER = 'images'
 RESULTS_FOLDER = 'results_html'
 OVERVIEW_FOLDER = 'overview_html'
 SAMPLE_FOLDER = 'sample_html'
-RANGE_ACCEPTED = 0.05
 TEMPLATE_FIELDS = [
     'branch', 'project', 'platform', 'sample', 'category'
 ]
@@ -340,50 +357,103 @@ def bad_list_page(contents):
     contents (dict of dicts) -- see returns of bad_page_contents
 
     """
-    html = textwrap.dedent('''
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Main</title>
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-          <style type="text/css">
-            body {font-family: verdana}
-            table {font-family: arial}
-            .tab { margin-left: 40px; }
-          </style>
-        </head>
-        <body>
-          <div id="container">
-            <div align="center">
-              <font size="6">
-                <b><i>ATLAS</i> EDM Trigger Size Monitoring Homepage</b>
-              </font>
+    if len(contents) != 0:
+        email_logger.info("Good morning!")
+        email_logger.info("Sorry to give you bad news: there are items in the bad list.")
+        email_logger.info("\n")
+        email_logger.info("Please check the website")
+        email_logger.info("https://test-atrvshft.web.cern.ch/test-atrvshft/TriggerEDMSizeMonitoring/webpage/")
+    
+        html = textwrap.dedent('''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Main</title>
+            <link rel="stylesheet" type="text/css" href="css/style.css">
+            <meta http-equiv="pragma" content="no-cache" />
+              <style type="text/css">
+                body {font-family: verdana}
+                table {font-family: arial}
+                .tab { margin-left: 40px; }
+              </style>
+            </head>
+            <body>
+              <div id="container">
+                <div align="center">
+                  <font size="6">
+                    <b><i>ATLAS</i> EDM Trigger Size Monitoring Homepage</b>
+                  </font>
+                </p>
+              </div>
+              <p> 
+              </br>
+                <div align="center">
+                  <hr>
+                  Welcome to the EDM web monitoring<br/>
+                  The page lists <b>only</b> the tests that fall outside the nominal range.<br/>
+                  Click on the links below to monitor the test or use the menu 
+                  on the left to navigate. <br/>
+                </div>
             </p>
-          </div>
-          <p> 
-          </br>
-            <div align="center">
-              <hr>
-              This page lists <b>only</b> the tests that fall outside the 
-              nominal range.<br/>
-              Click on the links to monitor the test or use the menu 
-              on the left to navigate. <br/>
-              If this page is empty all the Trigger EDM sizes are within 
-              the accepted range. 
-            </div>
-        </p>
-        <hr>
-    '''
-                           )
-    for header in contents:
-        html += badlist_box(header, contents[header])
+            <hr>
+        '''
+                               )
+        for header in contents:
+            html += badlist_box(header, contents[header])
+        html += textwrap.dedent(
+            '''    
+          </body>
+        </html>
+        '''
+        )
 
-    html += textwrap.dedent(
-        '''    
-      </body>
-    </html>
-    '''
-    )
+    else:
+        email_logger.info("Good morning!")
+        email_logger.info("Good news: there are no items in the bad list :)")
+        email_logger.info("\n")
+        email_logger.info("Have a lovely day")
+        email_logger.info("\n")
+        email_logger.info("P.S.: You can still check the website")
+        email_logger.info("https://test-atrvshft.web.cern.ch/test-atrvshft/TriggerEDMSizeMonitoring/webpage/")
+
+        html = textwrap.dedent('''
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Main</title>
+            <link rel="stylesheet" type="text/css" href="css/style.css">
+            <meta http-equiv="pragma" content="no-cache" />
+              <style type="text/css">
+                body {font-family: verdana}
+                table {font-family: arial}
+                .tab { margin-left: 40px; }
+              </style>
+            </head>
+            <body>
+              <div id="container">
+                <div align="center">
+                  <font size="6">
+                    <b><i>ATLAS</i> EDM Trigger Size Monitoring Homepage</b>
+                  </font>
+                </p>
+              </div>
+              <p> 
+              </br>
+                <div align="center">
+                  <hr>
+                  Welcome to the EDM web monitoring<br/>
+                  <font size="7">
+                  <b>GOOD NEWS! <br/> There are no bad tests!</b>
+                  <br/>
+                  <font size="6">
+                </div>
+            </p>
+            <hr>
+          </body>
+        </html>
+        '''
+        )
+            
     return html
 
 
@@ -599,7 +669,7 @@ def make_sidemenu(menu_items,
       <head>
         <title>Menu</title>
         <link rel="stylesheet" type="text/css" href="css/style.css"><base target="Right"/>
-
+        <meta http-equiv="pragma" content="no-cache" />
           <style type="text/css">
             body {font-family: sans-serif}
             table {font-family: sans-serif}
