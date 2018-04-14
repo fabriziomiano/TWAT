@@ -5,7 +5,7 @@ logs/
 webpage/results_html/
 webpage/overview_html/
 webpage/sample_html/
-
+webpage/images/
 
 # Byte-compiled files
 *.pyc
