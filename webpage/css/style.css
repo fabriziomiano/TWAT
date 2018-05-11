@@ -287,12 +287,12 @@ body, html {
     padding: 5px 0 5px 0;
     width: 97%;
     background-color:  #fff;
-    border-bottom: 1px solid #575f6a;
+    border-bottom: 0px solid #575f6a;
 }
 
 #leftcol {
     height: 100vh;
-    width: 15%;
+    width: 20%;
     float:left;
     border-style: solid;
     border-width: 0;
@@ -301,7 +301,7 @@ body, html {
 #rightcol {
     float: right;
     position: absolute;
-    width: 85%;
+    width: 80%;
     height: 100vh;
     border-style: solid;
     border-width: 0;
