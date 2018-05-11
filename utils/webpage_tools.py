@@ -15,18 +15,9 @@ from utils.misc import get_logger, timestamp_to_datetime, set_archive_path, is_d
 from settings.constants import TODAY, WEEKDAY, LOG_DIRECTORY, LOG_FILE_NAME, \
     INPUT_PATH_STRUCT, INPUT_HOME
 from settings.config import MAILHOST, FROM, TO, SUBJECT, RANGE_ACCEPTED
+from time import strftime
 
-# Create logger
-email_logger = get_logger(__name__)
-email_logger.setLevel(logging.INFO)
-# Add email handler
-SUBJECT = "EDM monitoring daily news" 
-email_news = BufferingSMTPHandler(MAILHOST, FROM, TO, SUBJECT, 100)
-email_news.setLevel(logging.INFO)
-formatter = logging.Formatter('%(message)s')
-email_news.setFormatter(formatter)
-email_logger.addHandler(email_news)
-
+TIMESTAMP = strftime("%Y%m%dT%H%M")
 
 WWW_HOME = 'webpage'
 IMAGES_FOLDER = 'images'
@@ -109,7 +100,7 @@ def sample_link(edm, item_info, levels_from_page=0):
     sample_string = '_'.join([info_copy[field]
                               for field in edm.template if info_copy.get(field) is not None])
     ref = relative + 'sample_html/sample_' + \
-        sample_string + '.html' + '#' + category
+        sample_string + '.html' + '?v=' + TIMESTAMP + '#' + category
     alias = info_copy['sample']
     return make_link(ref, alias)
 
@@ -311,12 +302,12 @@ def make_dropdown(edm, level,
     html += '<label>' + field.title() + ': </label>\n'
     html += '<select onchange="goToPage(this.options[this.selectedIndex].value)">\n'
     html += '<option selected>' + selected_menu + '</option>\n'
-    html += '<option value="../overview_html/' + overview_file + \
-        '">Overview</option>\n'
+    html += '<option value="../overview_html/' + overview_file + '?v=' + TIMESTAMP + \
+        '">Overview (empty if no bad tests)</option>\n'
     for key in edm.get_level(level):
         sample_string = overview_string + '_' + key + '.html'
         sample_file = '../sample_html/sample_' + sample_string
-        html += '<option value="' + sample_file + \
+        html += '<option value="' + sample_file + '?v=' + TIMESTAMP + \
             '">' + key + '</option>\n'
     html += textwrap.dedent(
         '''
@@ -357,13 +348,7 @@ def bad_list_page(contents):
     contents (dict of dicts) -- see returns of bad_page_contents
 
     """
-    if len(contents) != 0:
-        email_logger.info("Good morning!")
-        email_logger.info("Sorry to give you bad news: there are items in the bad list.")
-        email_logger.info("\n")
-        email_logger.info("Please check the website")
-        email_logger.info("https://test-atrvshft.web.cern.ch/test-atrvshft/TriggerEDMSizeMonitoring/webpage/")
-    
+    if len(contents) != 0:    
         html = textwrap.dedent('''
         <!DOCTYPE html>
         <html>
@@ -390,8 +375,10 @@ def bad_list_page(contents):
                 <div align="center">
                   <hr>
                   Welcome to the EDM web monitoring<br/>
-                  The page lists <b>only</b> the tests that fall outside the nominal range.<br/>
-                  Click on the links below to monitor the test or use the menu 
+                  The page lists <b>only</b> the tests that 
+                  fall outside the nominal range.<br/>
+                  Click on the links below to jump straight to 
+                  the test results or use the menu 
                   on the left to navigate. <br/>
                 </div>
             </p>
@@ -408,14 +395,6 @@ def bad_list_page(contents):
         )
 
     else:
-        email_logger.info("Good morning!")
-        email_logger.info("Good news: there are no items in the bad list :)")
-        email_logger.info("\n")
-        email_logger.info("Have a lovely day")
-        email_logger.info("\n")
-        email_logger.info("P.S.: You can still check the website")
-        email_logger.info("https://test-atrvshft.web.cern.ch/test-atrvshft/TriggerEDMSizeMonitoring/webpage/")
-
         html = textwrap.dedent('''
         <!DOCTYPE html>
         <html>
@@ -468,7 +447,7 @@ def plot_link(edm, item_info, plot_width='500', levels_from_page=0,
     fields = edm.info_tupler(item_info)
     relative = ''.join(['../' for _ in range(levels_from_page)])
     path = relative + image_path(fields, from_home)
-    link = '<a href="' + path + '"> <img src="' + \
+    link = '<a href="' + path + '?v=' + TIMESTAMP + '"> <img src="' + \
         path + '" width="' + plot_width + '" /> </a>\n'
     return link
 
@@ -495,7 +474,7 @@ def category_box(edm, item_info):
     html += '  <p>\n'
     html += item_info['category']
     ref = '../results_html/results_' + edm.item_string(item_info) + \
-          '.html'
+          '.html?v=' + TIMESTAMP
     alias = 'see full results'
     reference = edm.get_item(item_info).get('reference')
     html += ' <a href="' + ref + '" target="_blank"> <b> &#8594; ' + \
@@ -619,6 +598,7 @@ def html_sample_header(edm, level, selected_menu,
     html = make_head(title, style_path=style_path)
     # header: title and drop menu
     html += '<body>\n'
+    html += '<font size="6"><b>Results</b></font>\n'
     header_rows = [key.title() + ': ' + level[key] for key in level]
     html += make_header(*header_rows)
     html += '<body>\n'
@@ -681,7 +661,7 @@ def make_sidemenu(menu_items,
         <body bgcolor="white">
           <center>
             <nav>
-              <a class="button -dark center" target="main" href="main.html">Home</a>
+              <a class="button -dark center" target="main" href="main.html?v=''' + TIMESTAMP + '''">Home</a>
             </nav>
             <nav>
               <ul>
@@ -689,7 +669,7 @@ def make_sidemenu(menu_items,
                             )
     for item in menu_items:
         ref, alias = item
-        html += '<li><a class="button -regular center" target="main" href="' + ref + '">'
+        html += '<li><a class="button -regular center" target="main" href="' + ref + '?v=' + TIMESTAMP + '">'
         html += '<br/>'.join([word for word in alias.split()])
         html += '</a></li>\n'
     html += textwrap.dedent(
@@ -737,6 +717,7 @@ def overview(edm, overview_tuple):
     html = make_head(title, style_path='../css/def.css')
     # header: title and drop menu
     html += '<body>\n'
+    html += '<font size="6"><b>Overview</b></font>\n'    
     header_rows = [key.title() + ': ' + level[key] for key in level]
     html += make_header(*header_rows)
     # html += '<body>\n'
