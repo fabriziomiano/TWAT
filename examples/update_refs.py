@@ -24,7 +24,6 @@ mygroup = TEMPLATE_FIELDS[len(desired_fields):]
 for item in edm.item_infovalues(level=mylevel, group_names=mygroup):
     values = item.pop('values')
     item.update(desired_fields)
-    ref = edm.most_recent(item)
     ref_size = values.get(desired_date)
     edm.add_ref(item, ref_size)
 
