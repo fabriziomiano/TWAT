@@ -17,12 +17,14 @@ import datetime
 from itertools import product
 from classes.BufferingSMTPHandler import BufferingSMTPHandler
 from classes.EDM import EDM
-from utils.misc import get_logger, utils_log, set_consecutive, create_nonexistent_archive, \
+from utils.misc import utils_log
+from utils.misc import get_logger, set_consecutive, create_nonexistent_archive, \
     set_archive_path, extract_path_info, copy_file, get_trigsize, \
     datetime_to_timestamp, splash_screen
 from settings.constants import TODAY, WEEKDAY, LOG_DIRECTORY, LOG_FILE_NAME, \
     INPUT_PATH_STRUCT, INPUT_HOME
 from settings.config import MAILHOST, FROM, TO, SUBJECT
+
 splash_screen(TODAY, WEEKDAY)
 
 dirs = []
