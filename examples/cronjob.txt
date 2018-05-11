@@ -1,0 +1,5 @@
+# this is the template to use for a cron job
+# [min] [hour] [day of month] [month] [day of week] [node to run on] [program to be run]
+
+# to set the cron job give 'acrontab -e' in a shell and copy and paste the line below
+00 08 * * * lxplus.cern.ch /eos/user/a/atrvshft/www/TriggerEDMSizeMonitoring/runEDMmon.sh
