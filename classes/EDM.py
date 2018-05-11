@@ -66,7 +66,7 @@ class EDM(TaxoDB):
         if size > 0 and (nominal is not None):
             size = float(size)
             nominal = float(nominal)
-            tolerance = nominal * RANGE_ACCEPTED
+            tolerance = float(nominal) * RANGE_ACCEPTED
             min, max = nominal - tolerance, \
                 nominal + tolerance
             if (size > max) or (size < min):
