@@ -207,6 +207,7 @@ def table_content(edm, item_info,
                 links.append((make_link('../../archive/' + ref, alias),
                               out_of_range_colour))
             out_of_range_colour = ''
+            entries += 1
     dates = ('Date', dates)
     sizes = ('Size', sizes)
     links = ('Link', links)
@@ -482,7 +483,7 @@ def category_box(edm, item_info):
     html += '<font size="3">Nominal = ' + str(reference) + '</font>\n'
     html += '<br></br>\n'
 
-    columns = table_content(edm, item_info, redirect=False)
+    columns = table_content(edm, item_info, redirect=False, max_entries=14)
     html += html_table(*columns)
     html += textwrap.dedent(
         '''
