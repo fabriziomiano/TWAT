@@ -8,17 +8,22 @@ Run 'python update_refs.py -h' to see the helper
 
 First, it creates a backup of the current json file
 
-It needs to be given an argument of type string yyyy-mm-ddThhmm, 
-e.g. 'python update_refs.py 2018-05-02T2156' 
+It needs to be given three arguments of type string:
+e.g. 'python update_refs.py 21.0 Athena 2018-05-02T2156' 
 
 """
 args=sys.argv
 
 parser = argparse.ArgumentParser(description=\
-"""Tool to update the references using a given 
-string of type yyyy-mm-ddThhmm, 
-e.g. python update_refs.py 2018-05-02T2156""")
-parser.add_argument('desired_date', type=str, help='Specify timestamp of the desired nightly to be used as reference')
+                                 """Tool to update the references \
+                                 using the desired branch, project, \
+                                 and nightly production timestamp \
+                                 e.g. python update_refs.py 21.0 Athena 2018-05-02T2156""")
+
+parser.add_argument('desired_branch', type=str, help='Specify the desired branch (e.g. 21.0, 21.1, 21.1-dev, etc.) you want to produce reference for')
+parser.add_argument('desired_project', type=str, help='Specify the desired project (e.g. Athena, AthenaP1, etc.) you want to use as a reference for the specified branch')
+parser.add_argument('desired_date', type=str, help='Specify the timestamp (e.g. 2018-05-20T2141) of the nightly that you want to use as a reference')
+
 args = parser.parse_args()
 
 
@@ -31,7 +36,7 @@ TEMPLATE_FIELDS = [
 
 edm = EDM(DB_PATH, TEMPLATE_FIELDS)
 
-desired_fields = {'branch': '21.0', 'project': 'Athena'}
+desired_fields = {'branch': args.desired_branch, 'project': args.desired_project}
 #desired_date = '2018-03-02T2225' #old
 #desired_date = '2018-05-02T2156'  #new 
 
